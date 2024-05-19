@@ -2,7 +2,6 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect } from "react";
-import { getIdToken } from "@/utils/sessionTokenAccessor";
 
 async function keycloakSessionLogOut() {
   try {
@@ -11,21 +10,6 @@ async function keycloakSessionLogOut() {
     console.error(err);
   }
 }
-
-// async function keycloakSessionLogOut() {
-//   try {
-//     const idToken = await getIdToken();
-//     const url = `${process.env.END_SESSION_URL}?id_token_hint=${idToken}&post_logout_redirect_uri=${encodeURIComponent(process.env.NEXTAUTH_URL)}`;
-//     const resp = await fetch(url, { method: "GET" });
-//     if (resp.ok) {
-//       return new Response({ status: 200 });
-//     } else {
-//       throw new Error("Failed to logout from Keycloak.");
-//     }
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
 
 export default function AuthStatus() {
   const { data: session, status } = useSession();
@@ -47,7 +31,7 @@ export default function AuthStatus() {
   } else if (session) {
     return (
       <div className="my-3">
-        Logged in as <span className="text-yellow-100">{session.user.email}</span>{" "}
+        <span className="text-yellow-100">{session.user.name}</span>
         <button
           className="bg-blue-900 font-bold text-white py-1 px-2 rounded border border-gray-50"
           onClick={() => {
