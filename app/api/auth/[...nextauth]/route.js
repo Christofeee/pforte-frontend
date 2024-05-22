@@ -5,28 +5,28 @@ import { encrypt } from "@/utils/encryption";
 
 // this will refresh an expired access token, when needed
 async function refreshAccessToken(token) {
-    const resp = await fetch(`${process.env.REFRESH_TOKEN_URL}`, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        grant_type: "refresh_token",
-        refresh_token: token.refresh_token,
-      }),
-      method: "POST",
-    });
-    const refreshToken = await resp.json();
-    if (!resp.ok) throw refreshToken;
-  
-    return {
-      ...token,
-      access_token: refreshToken.access_token,
-      decoded: jwtDecode(refreshToken.access_token),
-      id_token: refreshToken.id_token,
-      expires_at: Math.floor(Date.now() / 1000) + refreshToken.expires_in,
-      refresh_token: refreshToken.refresh_token,
-    };
-  }
+  const resp = await fetch(`${process.env.REFRESH_TOKEN_URL}`, {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      grant_type: "refresh_token",
+      refresh_token: token.refresh_token,
+    }),
+    method: "POST",
+  });
+  const refreshToken = await resp.json();
+  if (!resp.ok) throw refreshToken;
+
+  return {
+    ...token,
+    access_token: refreshToken.access_token,
+    decoded: jwtDecode(refreshToken.access_token),
+    id_token: refreshToken.id_token,
+    expires_at: Math.floor(Date.now() / 1000) + refreshToken.expires_in,
+    refresh_token: refreshToken.refresh_token,
+  };
+}
 
 export const authOptions = {
   providers: [
@@ -67,11 +67,11 @@ export const authOptions = {
     },
     async session({ session, token }) {
       // Send properties to the client
-      session.access_token = encrypt(token.access_token); // see utils/sessionTokenAccessor.js
-      session.id_token = encrypt(token.id_token);  // see utils/sessionTokenAccessor.js
-      session.refresh_token = encrypt(token.refresh_token);  // see utils/sessionTokenAccessor.js
+      session.access_token = encrypt(token.access_token);
+      session.id_token = encrypt(token.id_token);
+      session.refresh_token = encrypt(token.refresh_token);
       session.roles = token.decoded.realm_access.roles;
-      session.error = token.error;      
+      session.error = token.error;
       return session;
     },
   },
