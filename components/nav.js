@@ -22,7 +22,6 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
@@ -97,21 +96,28 @@ function Nav() {
       return (
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Open settings">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <span className="text-yellow-100">{session.user.name}</span>
-            </IconButton>
+            <div onClick={handleOpenUserMenu} style={{ padding: '8px', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
+              <Typography variant="h6" className="text-blue-50">
+                {session.user.name}
+              </Typography>
+              {session.roles.filter(role => ['admin', 'teacher', 'student'].includes(role)).map(role => (
+                <Typography key={role} variant="body2" className="text-blue-50" align="right">
+                  {role}
+                </Typography>
+              ))}
+            </div>
           </Tooltip>
           <Menu
-            sx={{ mt: '45px' }}
+            sx={{ mt: '45px', position: 'fixed' }}
             id="menu-appbar"
-            anchorEl={anchorElUser}
+            // anchorEl={anchorElUser}
             anchorOrigin={{
               vertical: 'top',
-              horizontal: 'left',
+              horizontal: 'right',
             }}
             keepMounted
             transformOrigin={{
-              vertical: 'top',
+              vertical: 'bottom',
               horizontal: 'left',
             }}
             open={Boolean(anchorElUser)}
@@ -124,6 +130,7 @@ function Nav() {
             ))}
           </Menu>
         </Box>
+
       );
     }
 
@@ -230,7 +237,7 @@ function Nav() {
           </Box>
 
           <AuthStatus />
-          
+
         </Toolbar>
       </Container>
     </AppBar>
