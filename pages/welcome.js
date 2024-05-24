@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 
-export default function Index({ session }) {
+export default function Welcome({ session }) {
 
   const router = useRouter()
 
@@ -13,5 +13,5 @@ export default function Index({ session }) {
   } else if (session && session.roles?.includes("student")) {
     router.push('/student')
   }
-  return <h1>not logged in. Index</h1>
+  return <h1>sdfds</h1>
 }
