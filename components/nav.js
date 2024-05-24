@@ -40,6 +40,76 @@ async function keycloakSessionLogOut() {
   }
 }
 
+function AuthStatus() {
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+
+    if (
+      status != "loading" &&
+      session &&
+      session?.error === "RefreshAccessTokenError"
+    ) {
+      signOut({ callbackUrl: "/" });
+    }
+  }, [session, status]);
+
+
+  if (status == "loading") {
+    return <div className="my-3">Loading...</div>;
+  } else if (session) {
+    return (
+      <Box sx={{ flexGrow: 0 }}>
+        <Tooltip title="Open settings">
+          <div onClick={handleOpenUserMenu} style={{ padding: '8px', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
+            <Typography variant="h6" className="text-blue-50">
+              {session.user.name}
+            </Typography>
+            {session.roles.filter(role => ['admin', 'teacher', 'student'].includes(role)).map(role => (
+              <Typography key={role} variant="body2" className="text-blue-50" align="right">
+                {role}
+              </Typography>
+            ))}
+          </div>
+        </Tooltip>
+        <Menu
+          sx={{ mt: '45px', position: 'fixed' }}
+          id="menu-appbar"
+          // anchorEl={anchorElUser}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElUser)}
+          onClose={handleCloseUserMenu}
+        >
+          {settings.map((setting) => (
+            <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
+              <Typography textAlign="center">{setting}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
+
+    );
+  }
+
+  return (
+    <div className="my-3">
+      <button style={{ backgroundColor: '#4a0080', border: 'none', boxShadow: "0px 0px .5rem black" }}
+        className="bg-blue-900 font-bold text-white py-1 px-2 rounded border border-gray-50"
+        onClick={() => signIn("keycloak")}>
+        Log in
+      </button>
+    </div>
+  );
+}
+
 const pages = ['page'];
 const settings = ['Profile', 'About Us', 'Logout'];
 
@@ -74,101 +144,44 @@ function Nav() {
     }
   };
 
-  function AuthStatus() {
-    const { data: session, status } = useSession();
-
-    useEffect(() => {
-
-      if (
-        status != "loading" &&
-        session &&
-        session?.error === "RefreshAccessTokenError"
-      ) {
-        signOut({ callbackUrl: "/" });
-      }
-    }, [session, status]);
-
-
-    if (status == "loading") {
-      return <div className="my-3">Loading...</div>;
-    } else if (session) {
-      return (
-        <Box sx={{ flexGrow: 0 }}>
-          <Tooltip title="Open settings">
-            <div onClick={handleOpenUserMenu} style={{ padding: '8px', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
-              <Typography variant="h6" className="text-blue-50">
-                {session.user.name}
-              </Typography>
-              {session.roles.filter(role => ['admin', 'teacher', 'student'].includes(role)).map(role => (
-                <Typography key={role} variant="body2" className="text-blue-50" align="right">
-                  {role}
-                </Typography>
-              ))}
-            </div>
-          </Tooltip>
-          <Menu
-            sx={{ mt: '45px', position: 'fixed' }}
-            id="menu-appbar"
-            // anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            {settings.map((setting) => (
-              <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
-                <Typography textAlign="center">{setting}</Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
-
-      );
-    }
-
-    return (
-      <div className="my-3">
-        Not logged in.{" "}
-        <button
-          className="bg-blue-900 font-bold text-white py-1 px-2 rounded border border-gray-50"
-          onClick={() => signIn("keycloak")}>
-          Log in
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <AppBar position="static">
+    <AppBar position="static" style={{ backgroundColor: '#6a5bcd' }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            Pforte`
-          </Typography>
+        <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', padding: '5px' }}>
+            <AdbIcon sx={{ display: 'flex', mr: 1, color: '#' }} />
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: 'flex',
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: '#',
+                textDecoration: 'none',
+              }}
+            >
+              Pforte
+            </Typography>
+          </div>
+          <div>
+            <AuthStatus />  {/* Placed at the end for right-alignment */}
+          </div>
+        </Toolbar>
+      </Container>
+    </AppBar>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+  );
+}
+export default Nav;
+
+
+
+
+{/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -203,8 +216,8 @@ function Nav() {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          </Box> */}
+{/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -222,24 +235,15 @@ function Nav() {
             }}
           >
             Pforte`
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <AuthStatus />
-
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
-}
-export default Nav;
+          </Typography> */}
+{/* <Box sx={{ flexGrow: 1, display: 'flex' }}>
+              {pages.map((page) => (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  {page}
+                </Button>
+              ))}
+            </Box> */}

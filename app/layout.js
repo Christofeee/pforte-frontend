@@ -1,7 +1,8 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import Nav from '@/components/nav'
 import SessionProviderWrapper from '@/utils/sessionProviderWrapper'
+import Nav from '@/components/nav'
+import Footer from '@/components/footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,7 +18,7 @@ export default function RootLayout({ children }) {
         <body className={inter.className}>
           <div className=''><Nav /></div>
           <div>{children}</div>
-          <div>Footer</div>
+          <div><Footer /></div>
         </body>
       </html>
     </SessionProviderWrapper>
