@@ -1,12 +1,10 @@
 "use client";
+
 import * as React from 'react';
-// import axios from 'axios';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-// import { POST } from '@/app/api/auth/create-user/route';
-import { setFormData } from './formDataStore';
 
 const style = {
     position: 'absolute',

@@ -1,51 +1,9 @@
 "use client"
 
-import { useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { FormControl } from '@mui/material';
-import { FormLabel } from '@mui/material';
-import Box from "@mui/material/Box";
 import CreateUserModal from './createUserModal';
 
 export default function Management() {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    role: '',
-  });
-  const [users, setUsers] = useState([
-    { id: 1, username: 'john_doe', email: 'john@example.com', role: 'admin' },
-    { id: 2, username: 'jane_smith', email: 'jane@example.com', role: 'teacher' },
-    { id: 3, username: 'bob_brown', email: 'bob@example.com', role: 'student' },
-  ]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newUser = { ...formData, id: users.length + 1 };
-    setUsers((prevUsers) => [...prevUsers, newUser]);
-    setFormData({ username: '', email: '', role: '' });
-  };
-
-  const handleEdit = (userId, updatedData) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId ? { ...user, ...updatedData } : user
-      )
-    );
-  };
-
-  const handleDelete = (userId) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-  };
-
   return (
     <main className="p-5">
       <Typography className="text-center p-5" variant="h4">Account Management</Typography>
