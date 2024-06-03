@@ -30,7 +30,7 @@ const footerNavs = [
 
 function Footer() {
     return (
-        <footer className="text-gray-500 bg-white px-4 py-5 max-w-screen-xl mx-auto md:px-8">
+        <footer className="text-gray-500 bg-white px-4 py-5 mx-auto md:px-8" style={{ backgroundColor: '#6a5bcd', color: 'white', textShadow: "0px 0px .1rem black"}}>
             <div className="max-w-lg sm:mx-auto sm:text-center">
                 <img src="https://www.floatui.com/logo.svg" className="w-32 sm:mx-auto" />
                 <p className="leading-relaxed mt-2 text-[15px]">

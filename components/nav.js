@@ -14,6 +14,7 @@
 import * as React from 'react';
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect } from "react";
+import Link from 'next/link'
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -40,109 +41,120 @@ async function keycloakSessionLogOut() {
   }
 }
 
-function AuthStatus() {
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-
-    if (
-      status != "loading" &&
-      session &&
-      session?.error === "RefreshAccessTokenError"
-    ) {
-      signOut({ callbackUrl: "/" });
-    }
-  }, [session, status]);
-
-
-  if (status == "loading") {
-    return <div className="my-3">Loading...</div>;
-  } else if (session) {
-    return (
-      <Box sx={{ flexGrow: 0 }}>
-        <Tooltip title="Open settings">
-          <div onClick={handleOpenUserMenu} style={{ padding: '8px', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
-            <Typography variant="h6" className="text-blue-50">
-              {session.user.name}
-            </Typography>
-            {session.roles.filter(role => ['admin', 'teacher', 'student'].includes(role)).map(role => (
-              <Typography key={role} variant="body2" className="text-blue-50" align="right">
-                {role}
-              </Typography>
-            ))}
-          </div>
-        </Tooltip>
-        <Menu
-          sx={{ mt: '45px', position: 'fixed' }}
-          id="menu-appbar"
-          // anchorEl={anchorElUser}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
-        >
-          {settings.map((setting) => (
-            <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
-              <Typography textAlign="center">{setting}</Typography>
-            </MenuItem>
-          ))}
-        </Menu>
-      </Box>
-
-    );
+const handleSignIn = async () => {
+  try {
+    signIn("keycloak");
+  } catch (error) {
+    console.error("Error during login:", error);
   }
+};
 
-  return (
-    <div className="my-3">
-      <button style={{ backgroundColor: '#4a0080', border: 'none', boxShadow: "0px 0px .5rem black" }}
-        className="bg-blue-900 font-bold text-white py-1 px-2 rounded border border-gray-50"
-        onClick={() => signIn("keycloak")}>
-        Log in
-      </button>
-    </div>
-  );
-}
-
-const pages = ['page'];
-const settings = ['Profile', 'About Us', 'Logout'];
+// const pages = ['page'];
+// const settings = ['Profile', 'About Us', 'Logout'];
 
 function Nav() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+
+  // const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  // const handleOpenNavMenu = (event) => {
+  //   setAnchorElNav(event.currentTarget);
+  // };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  // const handleCloseNavMenu = () => {
+  //   setAnchorElNav(null);
+  // };
 
   const handleCloseUserMenu = (key) => {
     setAnchorElUser(null);
     const functionMap = {
-      // 'Profile': function1,
-      // 'About Us': function2,
       'Logout': keycloakSessionLogOut,
     };
 
     const functionToCall = functionMap[key];
     if (functionToCall) {
       functionToCall();
-    } else {
-      console.warn(`Function not found for key: ${key}`); // Handle potentially missing functions
     }
   };
+
+  function AuthStatus() {
+    const { data: session, status } = useSession();
+
+    useEffect(() => {
+
+      if (
+        status != "loading" &&
+        session &&
+        session?.error === "RefreshAccessTokenError"
+      ) {
+        signOut({ callbackUrl: "/" });
+      }
+    }, [session, status]);
+
+
+    if (status == "loading") {
+      return <div className="my-3">Loading...</div>;
+    } else if (session) {
+      return (
+        <Box sx={{ flexGrow: 0 }}>
+          <Tooltip title="Open settings">
+            <div onClick={handleOpenUserMenu} style={{ padding: '8px', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
+              <Typography variant="h6" className="text-blue-50">
+                {session.user.name}
+              </Typography>
+              {session.roles.filter(role => ['admin', 'teacher', 'student'].includes(role)).map(role => (
+                <Typography key={role} variant="body2" className="text-blue-50" align="right">
+                  {role}
+                </Typography>
+              ))}
+            </div>
+          </Tooltip>
+          <Menu
+            sx={{ mt: '45px', position: 'fixed' }}
+            id="menu-appbar"
+            // anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+          >
+            {/* {settings.map((setting) => (
+              <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            ))} */}
+            <MenuItem key='Logout' onClick={() => handleCloseUserMenu('Logout')}>
+              <Typography textAlign="center">Logout</Typography>
+            </MenuItem>
+            <MenuItem onClick={() => handleCloseUserMenu()}>
+              <Typography textAlign="center"><Link href="/about">About Us</Link></Typography>
+            </MenuItem>
+          </Menu>
+        </Box>
+
+      );
+    }
+
+    return (
+      <div className="my-3">
+        <button style={{ backgroundColor: '#4a0080', border: 'none', boxShadow: "0px 0px .5rem black" }}
+          className="bg-blue-900 font-bold text-white py-1 px-2 rounded border border-gray-50"
+          onClick={handleSignIn}>
+          Log in
+        </button>
+      </div>
+    );
+  }
 
   return (
     <AppBar position="static" style={{ backgroundColor: '#6a5bcd' }}>
@@ -168,7 +180,7 @@ function Nav() {
             </Typography>
           </div>
           <div>
-            <AuthStatus />  {/* Placed at the end for right-alignment */}
+            <AuthStatus />
           </div>
         </Toolbar>
       </Container>
