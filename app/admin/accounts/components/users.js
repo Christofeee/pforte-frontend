@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import getUsers from './getUsers'; // Assuming getUsers fetches user data
 import deleteUser from './deleteUser';
+import EditUserModal from './editUserModal';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -52,30 +53,33 @@ const Users = () => {
         setSelectAll(!selectAll);
     };
 
-    const handleDeleteSelected = () => {
-        // Placeholder for delete API call
-        console.log('Delete users with IDs:', Array.from(selectedUsers));
-        // After successful deletion, update the user list
-        setUsers(users.filter(user => !selectedUsers.has(user.id)));
-        setSelectedUsers(new Set());
-        setSelectAll(false);
+    const handleDeleteSelected = async () => {
+        setLoading(true);
+        const selectedUserIds = Array.from(selectedUsers);
+        try {
+            await Promise.all(selectedUserIds.map(userId => deleteUser(userId)));
+            setUsers(users.filter(user => !selectedUsers.has(user.id)));
+            setSelectedUsers(new Set());
+            setSelectAll(false);
+        } catch (error) {
+            console.error('Error deleting users:', error);
+            // Handle error (e.g., show a message to the user)
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleUserDelete = async (userId) => {
-        console.log("Deleting user")
+        console.log("Deleting user");
         try {
             await deleteUser(userId);
-            // Optional: Add success message or close the modal
-            window.location.reload();
+            setUsers(users.filter(user => user.id !== userId));
         } catch (error) {
             console.error('Error deleting user:', error);
         }
-    }
+    };
 
     const handleUserEdit = (userId, updatedUser) => {
-        // Placeholder for edit API call
-        console.log(`Edit user with ID: ${userId}`, updatedUser);
-        // After successful edit, update the user list
         setUsers(users.map(user => user.id === userId ? updatedUser : user));
     };
 
@@ -101,8 +105,8 @@ const Users = () => {
                 <option value="teacher">Teacher</option>
                 <option value="student">Student</option>
             </select>
-            <button onClick={handleDeleteSelected} disabled={selectedUsers.size === 0} style={{ marginBottom: '1rem' }}>
-                Delete Selected
+            <button onClick={handleDeleteSelected} disabled={selectedUsers.size === 0 || loading} style={{ marginBottom: '1rem' }}>
+                {loading ? 'Deleting...' : 'Delete Selected'}
             </button>
             <div style={{ marginBottom: '1rem' }}>
                 <input
@@ -130,8 +134,10 @@ const Users = () => {
                             <span>
                                 {user.firstName} {user.lastName} ({user.role}) - {user.email}
                             </span>
-                            <button onClick={() => handleUserDelete(user.id)} style={{ marginLeft: '1rem' }}>Delete</button>
-                            <button onClick={() => handleUserEdit(user.id, { ...user, firstName: 'EditedFirstName' })} style={{ marginLeft: '0.5rem' }}>Edit</button>
+                            <button onClick={() => handleUserDelete(user.id)} style={{ marginLeft: '1rem' }} disabled={selectedUsers.size > 0}>
+                                Delete
+                            </button>
+                            <EditUserModal user={user} onSave={(updatedUser) => handleUserEdit(user.id, updatedUser)} />
                         </li>
                     ))}
                 </ul>
