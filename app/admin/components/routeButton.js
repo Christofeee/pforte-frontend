@@ -8,7 +8,7 @@ export default function RouteButton({ path, buttonName }) {
     const router = useRouter();
 
     const handleAccountsClick = () => {
-        console.log("routing to ", path)
+        // console.log("routing to ", path)
         router.push(path);
     };
 

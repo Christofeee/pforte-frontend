@@ -8,7 +8,7 @@ export default function AdminPage({ session }) {
     const router = useRouter();
 
     const handleAccountsClick = () => {
-        console.log("routing to /admin/accounts")
+        // console.log("routing to /admin/accounts")
         router.push('/admin/accounts');
     };
 

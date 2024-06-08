@@ -2,6 +2,7 @@
 
 import Typography from '@mui/material/Typography';
 import CreateUserModal from './createUserModal';
+import Users from './users';
 
 export default function Management() {
   return (
@@ -11,6 +12,7 @@ export default function Management() {
         <CreateUserModal/>
       </div>
       <div className='shadow rounded p-5'>
+        <Users />
       </div>
     </main >
   );

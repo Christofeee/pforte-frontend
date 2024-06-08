@@ -20,21 +20,24 @@ const style = {
     pb: 3,
 };
 
-async function createUser(data) {
+async function createUser(userData) {
     try {
         const response = await fetch(`/api/auth/create-user`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
-        }
-        );
-        console.log('User created successfully:', response.data);
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        console.log('User Created successfully:', data);
+        return data;
     } catch (error) {
         console.error('Error creating user:', error.response?.data || error.message);
+        return data;
     }
-};
+}
 
 export default function CreateUserModal() {
     const [open, setOpen] = React.useState(false);
@@ -61,12 +64,13 @@ export default function CreateUserModal() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(data)
+        // console.log(data)
         // setFormData(data);
         try {
             await createUser(data);
             // Optional: Add success message or close the modal
             handleClose();
+            window.location.reload();
         } catch (error) {
             console.error('Error creating user:', error);
         }
