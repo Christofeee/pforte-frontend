@@ -12,6 +12,7 @@ const Users = () => {
     const [selectedUsers, setSelectedUsers] = useState(new Set()); // State for selected users
     const [selectAll, setSelectAll] = useState(false); // State for select all
     const [loading, setLoading] = useState(false); // State for loading
+    const [deleting, setDeleting] = useState(false); // State for deleting
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,7 +55,7 @@ const Users = () => {
     };
 
     const handleDeleteSelected = async () => {
-        setLoading(true);
+        setDeleting(true);
         const selectedUserIds = Array.from(selectedUsers);
         try {
             await Promise.all(selectedUserIds.map(userId => deleteUser(userId)));
@@ -65,17 +66,19 @@ const Users = () => {
             console.error('Error deleting users:', error);
             // Handle error (e.g., show a message to the user)
         } finally {
-            setLoading(false);
+            setDeleting(false);
         }
     };
 
     const handleUserDelete = async (userId) => {
-        console.log("Deleting user");
         try {
+            setDeleting(true);
             await deleteUser(userId);
             setUsers(users.filter(user => user.id !== userId));
         } catch (error) {
             console.error('Error deleting user:', error);
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -105,8 +108,8 @@ const Users = () => {
                 <option value="teacher">Teacher</option>
                 <option value="student">Student</option>
             </select>
-            <button onClick={handleDeleteSelected} disabled={selectedUsers.size === 0 || loading} style={{ marginBottom: '1rem' }}>
-                {loading ? 'Deleting...' : 'Delete Selected'}
+            <button onClick={handleDeleteSelected} disabled={selectedUsers.size === 0 || deleting} style={{ marginBottom: '1rem' }}>
+                {deleting ? 'Deleting...' : 'Delete Selected'}
             </button>
             <div style={{ marginBottom: '1rem' }}>
                 <input
@@ -134,8 +137,8 @@ const Users = () => {
                             <span>
                                 {user.firstName} {user.lastName} ({user.role}) - {user.email}
                             </span>
-                            <button onClick={() => handleUserDelete(user.id)} style={{ marginLeft: '1rem' }} disabled={selectedUsers.size > 0}>
-                                Delete
+                            <button onClick={() => handleUserDelete(user.id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
+                                {deleting ? 'Deleting...' : 'Delete'}
                             </button>
                             <EditUserModal user={user} onSave={(updatedUser) => handleUserEdit(user.id, updatedUser)} />
                         </li>

@@ -31,7 +31,7 @@ async function updateUser(userId, userData) {
         });
 
         const data = await response.json();
-        console.log('User updated successfully:', data);
+        console.log('User updated successfully:');
         return data;
     } catch (error) {
         console.error('Error updating user:', error.response?.data || error.message);
@@ -81,6 +81,7 @@ export default function EditUserModal({ user, onSave }) {
             const updatedUser = await updateUser(user.id, data);
             onSave(updatedUser);
             handleClose();
+            window.location.reload();
         } catch (error) {
             console.error('Error updating user:', error);
         }

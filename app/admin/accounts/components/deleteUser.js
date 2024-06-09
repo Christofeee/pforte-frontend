@@ -8,7 +8,7 @@ export default async function deleteUser(userId) {
         }
         );
         const data = await response.json();
-        console.log('User delete successfully:', data);
+        console.log('User delete successfully:');
         return data;
     } catch (error) {
         console.error('Error deleting user:', error.response?.data || error.message);

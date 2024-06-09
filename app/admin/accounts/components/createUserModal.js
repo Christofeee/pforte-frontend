@@ -31,7 +31,7 @@ async function createUser(userData) {
         });
 
         const data = await response.json();
-        console.log('User Created successfully:', data);
+        console.log('User Created successfully:');
         return data;
     } catch (error) {
         console.error('Error creating user:', error.response?.data || error.message);

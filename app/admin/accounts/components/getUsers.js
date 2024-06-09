@@ -77,6 +77,5 @@ export default async function getUsers() {
         }
     }
     const users = [...students, ...teachers];
-    console.log(users)
     return users
 }

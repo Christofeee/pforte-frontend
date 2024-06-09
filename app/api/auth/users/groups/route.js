@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
     try {
-        console.log("IN API TO FETCH GROUPS")
         const accessToken = await getAccessToken();
         
         const headers = {
@@ -16,7 +15,7 @@ export async function GET() {
         const url = 'http://localhost:8080/admin/realms/Pforte/groups';
 
         const response = await axios.get(url, { headers });
-        console.log('User created successfully:', response.data);
+        console.log('User created successfully:');
         return NextResponse.json({ data: response.data }, { status: 200 });
     } catch (error) {
         console.error('Error creating user:', error);
