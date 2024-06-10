@@ -9,7 +9,10 @@ import Typography from '@mui/material/Typography';
 import getClasses from './getClasses';
 import getUsers from '../../accounts/components/getUsers';
 import getClassUsers from './getClassUsers';
+import deleteClass from './deleteClass';
 
+import CreateClassModal from './createClassModal';
+import EditClassModal from './editClassModal';
 
 export default function ManageClassrooms() {
     const [classes, setClasses] = useState([]);
@@ -18,6 +21,7 @@ export default function ManageClassrooms() {
     const [enterClass, setEnterClass] = useState(false);
     const [selectedClass, setSelectedClass] = useState(null);
     const [selectedClassUsers, setSelectedClassUsers] = useState([]);
+    const [deleting, setDeleting] = useState(false); // State for deleting
 
     useEffect(() => {
         const fetchClasses = async () => {
@@ -59,7 +63,7 @@ export default function ManageClassrooms() {
 
         // Map the user IDs to user details
         const usersInClass = filteredClassUsers.map(fcu => users.find(u => u.id === fcu.user_id));
-        
+
         setSelectedClassUsers(usersInClass);
     };
 
@@ -69,17 +73,40 @@ export default function ManageClassrooms() {
         setSelectedClassUsers([]);
     };
 
+    const handleClassEdit = (classId, updatedClass) => {
+        setClasses(classes.map(c => c.id === classId ? updatedClass : c));
+    };
+
+    const handleClassDelete = async (classId) => {
+        try {
+            setDeleting(true);
+            await deleteClass(classId);
+            setClasses(classes.filter(c => c.id !== classId));
+        } catch (error) {
+            console.error('Error deleting class:', error);
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     return (
         <div>
             {!enterClass ? (
                 <div>
-                    <Typography variant="h5">Classes</Typography>
+                    <Typography className="text-center p-5" variant="h4">Manage Classes</Typography>
+                    <div className='text-end p-5'>
+                        <CreateClassModal />
+                    </div>
                     <ul>
                         {classes.map((classItem) => (
                             <li key={classItem.classroom_id} className='m-3 p-5 text-white-100 shadow'>
                                 <Typography variant="h5">{classItem.name}</Typography>
                                 <p>{classItem.description}</p>
                                 <Button onClick={() => handleEnterClass(classItem)}><ArrowForwardIosIcon /></Button>
+                                <button onClick={() => handleClassDelete(classItem.id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
+                                    {deleting ? 'Deleting...' : 'Delete'}
+                                </button>
+                                <EditClassModal classItem={classItem} onSave={(updatedClass) => handleClassEdit(classItem.id, updatedClass)} />
                             </li>
                         ))}
                     </ul>
