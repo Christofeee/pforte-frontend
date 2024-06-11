@@ -10,9 +10,11 @@ import getClasses from './getClasses';
 import getUsers from '../../accounts/components/getUsers';
 import getClassUsers from './getClassUsers';
 import deleteClass from './deleteClass';
+import deleteClassUser from './deleteClassUser';
 
 import CreateClassModal from './createClassModal';
 import EditClassModal from './editClassModal';
+import PutClassMembers from './putClassMembers';
 
 export default function ManageClassrooms() {
     const [classes, setClasses] = useState([]);
@@ -21,7 +23,7 @@ export default function ManageClassrooms() {
     const [enterClass, setEnterClass] = useState(false);
     const [selectedClass, setSelectedClass] = useState(null);
     const [selectedClassUsers, setSelectedClassUsers] = useState([]);
-    const [deleting, setDeleting] = useState(false); // State for deleting
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         const fetchClasses = async () => {
@@ -54,17 +56,41 @@ export default function ManageClassrooms() {
         fetchClassUsers();
     }, []);
 
+    const fetchClassUsers = async () => {
+        try {
+            const data = await getClassUsers();
+            setClassUsers(data);
+        } catch (error) {
+            console.error('Error fetching class users:', error);
+        }
+    };
+
     const handleEnterClass = (classItem) => {
         setSelectedClass(classItem);
         setEnterClass(true);
 
-        // Filter classUsers to find users in the selected class
-        const filteredClassUsers = classUsers.filter(cu => cu.classroom_id === classItem.classroom_id);
+        // Fetch the latest class users
+        const fetchClassUsersForClass = async () => {
+            try {
+                const data = await getClassUsers();
+                setClassUsers(data);
 
-        // Map the user IDs to user details
-        const usersInClass = filteredClassUsers.map(fcu => users.find(u => u.id === fcu.user_id));
+                // Filter classUsers to find users in the selected class
+                const filteredClassUsers = data.filter(cu => cu.classroom_id === classItem.classroom_id);
+                
+                // Map the user IDs to user details
+                const usersInClass = filteredClassUsers.map(fcu => {
+                    const user = users.find(u => u.id === fcu.user_id);
+                    return { ...user, classroom_user_id: fcu.classroom_user_id }; // Include the class user ID
+                });
 
-        setSelectedClassUsers(usersInClass);
+                setSelectedClassUsers(usersInClass);
+            } catch (error) {
+                console.error('Error fetching class users:', error);
+            }
+        };
+
+        fetchClassUsersForClass();
     };
 
     const handleShowClasses = () => {
@@ -74,7 +100,7 @@ export default function ManageClassrooms() {
     };
 
     const handleClassEdit = (classId, updatedClass) => {
-        setClasses(classes.map(c => c.id === classId ? updatedClass : c));
+        setClasses(classes.map(c => c.classroom_id === classId ? updatedClass : c));
     };
 
     const handleClassDelete = async (classId) => {
@@ -84,6 +110,21 @@ export default function ManageClassrooms() {
             setClasses(classes.filter(c => c.classroom_id !== classId));
         } catch (error) {
             console.error('Error deleting class:', error);
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const handleClassUserDelete = async (classUserId) => {
+        try {
+            setDeleting(true);
+            await deleteClassUser(classUserId);
+            // Update state to remove the deleted user from the class
+            setSelectedClassUsers(selectedClassUsers.filter(user => user.classroom_user_id !== classUserId));
+            // Update classUsers state to reflect deletion
+            setClassUsers(classUsers.filter(cu => cu.classroom_user_id !== classUserId));
+        } catch (error) {
+            console.error('Error deleting class user:', error);
         } finally {
             setDeleting(false);
         }
@@ -112,15 +153,21 @@ export default function ManageClassrooms() {
                     </ul>
                 </div>
             ) : (
-                <div className='flex'>
+                <div>
                     <Button onClick={handleShowClasses}><ArrowBackIosIcon /></Button>
                     <div>
-                        <Typography variant="h5">Manage Users In {selectedClass.name}</Typography>
+                        <Typography className="text-center p-5" variant="h5">Manage Users In {selectedClass.name}</Typography>
+                        <div className='text-end p-5'>
+                            <PutClassMembers users={users} classId={selectedClass.classroom_id} />
+                        </div>
                         <ul>
                             {selectedClassUsers.map(user => (
-                                <li key={user.id} className='m-3 p-5 text-white-100 shadow'>
+                                <li key={user.classroom_user_id} className='m-3 p-5 text-white-100 shadow'>
                                     <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
-                                    <p>Role: {user.role}</p>
+                                    <p>{user.role}</p>
+                                    <button onClick={() => handleClassUserDelete(user.classroom_user_id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
+                                        {deleting ? 'Deleting...' : 'Delete'}
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -130,6 +177,9 @@ export default function ManageClassrooms() {
         </div>
     );
 }
+
+
+
 
 
 {/* <div>
