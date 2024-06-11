@@ -70,7 +70,7 @@ export default function EditClassModal({ classItem, onSave }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const updatedClass = await updateClass(classItem.id, data);
+            const updatedClass = await updateClass(classItem.classroom_id, data);
             onSave(updatedClass);
             handleClose();
             window.location.reload();

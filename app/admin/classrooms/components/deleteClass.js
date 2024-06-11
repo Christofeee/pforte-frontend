@@ -1,6 +1,6 @@
 export default async function deleteClass(classId) {
     try {
-        const response = await fetch(`/api/auth/classes?id=${classId}`, {
+        const response = await fetch(`/api/auth/classes/delete?id=${classId}`, {
             method: "DELETE",
             headers: {
                 'Content-Type': 'application/json'

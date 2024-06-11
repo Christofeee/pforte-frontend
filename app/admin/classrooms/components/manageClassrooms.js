@@ -81,7 +81,7 @@ export default function ManageClassrooms() {
         try {
             setDeleting(true);
             await deleteClass(classId);
-            setClasses(classes.filter(c => c.id !== classId));
+            setClasses(classes.filter(c => c.classroom_id !== classId));
         } catch (error) {
             console.error('Error deleting class:', error);
         } finally {
@@ -103,10 +103,10 @@ export default function ManageClassrooms() {
                                 <Typography variant="h5">{classItem.name}</Typography>
                                 <p>{classItem.description}</p>
                                 <Button onClick={() => handleEnterClass(classItem)}><ArrowForwardIosIcon /></Button>
-                                <button onClick={() => handleClassDelete(classItem.id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
+                                <button onClick={() => handleClassDelete(classItem.classroom_id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
                                     {deleting ? 'Deleting...' : 'Delete'}
                                 </button>
-                                <EditClassModal classItem={classItem} onSave={(updatedClass) => handleClassEdit(classItem.id, updatedClass)} />
+                                <EditClassModal classItem={classItem} onSave={(updatedClass) => handleClassEdit(classItem.classroom_id, updatedClass)} />
                             </li>
                         ))}
                     </ul>
