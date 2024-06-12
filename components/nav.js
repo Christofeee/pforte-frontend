@@ -157,7 +157,12 @@ function Nav() {
   }
 
   return (
-    <AppBar position="static" style={{ backgroundColor: '#6a5bcd' }}>
+    <AppBar
+      sx={{
+        backgroundColor: '#6a5bcd',
+        borderBottomLeftRadius: '30px', 
+        borderBottomRightRadius: '30px',
+      }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', padding: '5px' }}>
@@ -176,7 +181,7 @@ function Nav() {
                 textDecoration: 'none',
               }}
             >
-              Pforte
+              Pforte`
             </Typography>
           </div>
           <div>

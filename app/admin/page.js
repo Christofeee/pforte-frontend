@@ -1,7 +1,8 @@
+import React from 'react';
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import AuthCheck from "@/utils/authCheck";
-import { Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import RouteButton from "./components/routeButton";
 
 export default async function Admin() {
@@ -9,15 +10,16 @@ export default async function Admin() {
 
   return (
     <AuthCheck session={session} roleToCheck="admin">
-      <main className="text-center p-5">
-        <div className="p-5">
+      <Box sx={{ textAlign: 'center', padding: '40px', fontFamily: 'Roboto, sans-serif' }}>
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: 300, letterSpacing: '2px' }}>
+          Admin Management
+        </Typography>
+        <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
           <RouteButton path='/admin/announcements' buttonName='Announcements' />
-        </div>
-        <div className="my-5" style={{ display: 'flex', justifyContent: 'space-evenly' }}>
           <RouteButton path='/admin/classrooms' buttonName='Classrooms' />
           <RouteButton path='/admin/accounts' buttonName='Accounts' />
-        </div>
-      </main>
+        </Box>
+      </Box>
     </AuthCheck>
   );
 }

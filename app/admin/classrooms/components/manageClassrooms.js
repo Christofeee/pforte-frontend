@@ -1,10 +1,8 @@
 "use client"
-
 import React, { useState, useEffect } from 'react';
-import { Button } from '@mui/material';
+import { Button, Card, CardContent, CardActions, Grid, Typography, Box, CircularProgress, Backdrop } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import Typography from '@mui/material/Typography';
 
 import getClasses from './getClasses';
 import getUsers from '../../accounts/components/getUsers';
@@ -24,64 +22,45 @@ export default function ManageClassrooms() {
     const [selectedClass, setSelectedClass] = useState(null);
     const [selectedClassUsers, setSelectedClassUsers] = useState([]);
     const [deleting, setDeleting] = useState(false);
+    const [loading, setLoading] = useState(true); // Initialize loading state as true
 
     useEffect(() => {
-        const fetchClasses = async () => {
+        const fetchData = async () => {
             try {
-                const data = await getClasses();
-                setClasses(data);
+                setLoading(true); // Set loading state to true before fetching data
+
+                const classesData = await getClasses();
+                setClasses(classesData);
+
+                const usersData = await getUsers();
+                setUsers(usersData);
+
+                const classUsersData = await getClassUsers();
+                setClassUsers(classUsersData);
+
+                setLoading(false); // Set loading state to false after fetching data
             } catch (error) {
-                console.error('Error fetching classes:', error);
-            }
-        };
-        const fetchUsers = async () => {
-            try {
-                const data = await getUsers();
-                setUsers(data);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
-        const fetchClassUsers = async () => {
-            try {
-                const data = await getClassUsers();
-                setClassUsers(data);
-            } catch (error) {
-                console.error('Error fetching class users:', error);
+                console.error('Error fetching data:', error);
+                setLoading(false); // Set loading state to false in case of error
             }
         };
 
-        fetchClasses();
-        fetchUsers();
-        fetchClassUsers();
+        fetchData();
     }, []);
-
-    const fetchClassUsers = async () => {
-        try {
-            const data = await getClassUsers();
-            setClassUsers(data);
-        } catch (error) {
-            console.error('Error fetching class users:', error);
-        }
-    };
 
     const handleEnterClass = (classItem) => {
         setSelectedClass(classItem);
         setEnterClass(true);
 
-        // Fetch the latest class users
         const fetchClassUsersForClass = async () => {
             try {
                 const data = await getClassUsers();
                 setClassUsers(data);
 
-                // Filter classUsers to find users in the selected class
                 const filteredClassUsers = data.filter(cu => cu.classroom_id === classItem.classroom_id);
-                
-                // Map the user IDs to user details
                 const usersInClass = filteredClassUsers.map(fcu => {
                     const user = users.find(u => u.id === fcu.user_id);
-                    return { ...user, classroom_user_id: fcu.classroom_user_id }; // Include the class user ID
+                    return { ...user, classroom_user_id: fcu.classroom_user_id };
                 });
 
                 setSelectedClassUsers(usersInClass);
@@ -119,9 +98,7 @@ export default function ManageClassrooms() {
         try {
             setDeleting(true);
             await deleteClassUser(classUserId);
-            // Update state to remove the deleted user from the class
             setSelectedClassUsers(selectedClassUsers.filter(user => user.classroom_user_id !== classUserId));
-            // Update classUsers state to reflect deletion
             setClassUsers(classUsers.filter(cu => cu.classroom_user_id !== classUserId));
         } catch (error) {
             console.error('Error deleting class user:', error);
@@ -131,50 +108,91 @@ export default function ManageClassrooms() {
     };
 
     return (
-        <div>
-            {!enterClass ? (
-                <div>
-                    <Typography className="text-center p-5" variant="h4">Manage Classes</Typography>
-                    <div className='text-end p-5'>
-                        <CreateClassModal />
-                    </div>
-                    <ul>
-                        {classes.map((classItem) => (
-                            <li key={classItem.classroom_id} className='m-3 p-5 text-white-100 shadow'>
-                                <Typography variant="h5">{classItem.name}</Typography>
-                                <p>{classItem.description}</p>
-                                <Button onClick={() => handleEnterClass(classItem)}><ArrowForwardIosIcon /></Button>
-                                <button onClick={() => handleClassDelete(classItem.classroom_id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
-                                    {deleting ? 'Deleting...' : 'Delete'}
-                                </button>
-                                <EditClassModal classItem={classItem} onSave={(updatedClass) => handleClassEdit(classItem.classroom_id, updatedClass)} />
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            ) : (
-                <div>
-                    <Button onClick={handleShowClasses}><ArrowBackIosIcon /></Button>
-                    <div>
-                        <Typography className="text-center p-5" variant="h5">Manage Users In {selectedClass.name}</Typography>
-                        <div className='text-end p-5'>
-                            <PutClassMembers users={users} classId={selectedClass.classroom_id} />
-                        </div>
-                        <ul>
-                            {selectedClassUsers.map(user => (
-                                <li key={user.classroom_user_id} className='m-3 p-5 text-white-100 shadow'>
-                                    <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
-                                    <p>{user.role}</p>
-                                    <button onClick={() => handleClassUserDelete(user.classroom_user_id)} style={{ marginLeft: '1rem' }} disabled={deleting}>
-                                        {deleting ? 'Deleting...' : 'Delete'}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+        <Box sx={{ padding: 4 }}>
+            {loading && ( // Conditionally render loading spinner if loading state is true
+                <Backdrop open={loading} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'white', color: '#8a2ce2' }}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             )}
-        </div>
+            {!enterClass ? (
+                <Box>
+                    <Typography variant="h4" align="center" gutterBottom>
+                        Manage Classes
+                    </Typography>
+                    <Box sx={{ textAlign: 'right', marginBottom: 3 }}>
+                        <CreateClassModal />
+                    </Box>
+                    <Grid container spacing={3}>
+                        {classes.map((classItem) => (
+                            <Grid item xs={12} sm={6} md={4} key={classItem.classroom_id}>
+                                <Card>
+                                    <CardContent onClick={() => handleEnterClass(classItem)}>
+                                        <Grid container alignItems="center" justifyContent="space-between">
+                                            <Grid item>
+                                                    <Typography variant="h5">{classItem.name}</Typography>
+                                                    <Typography variant="body2" color="textSecondary">
+                                                        {classItem.description}
+                                                    </Typography>
+                                            </Grid>
+                                            <Grid item>
+                                                <Button size="small" startIcon={<ArrowForwardIosIcon />} />
+                                            </Grid>
+                                        </Grid>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button
+                                            size="small"
+                                            onClick={() => handleClassDelete(classItem.classroom_id)}
+                                            color="secondary"
+                                            disabled={deleting}
+                                        >
+                                            {deleting ? 'Deleting...' : 'Delete'}
+                                        </Button>
+                                        <EditClassModal classItem={classItem} onSave={(updatedClass) => handleClassEdit(classItem.classroom_id, updatedClass)} />
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+            ) : (
+                <Box>
+                    <Button onClick={handleShowClasses} startIcon={<ArrowBackIosIcon />}>
+                        Back to Classes
+                    </Button>
+                    <Typography variant="h5" align="center" gutterBottom>
+                        Manage Users In {selectedClass.name}
+                    </Typography>
+                    <Box sx={{ textAlign: 'right', marginBottom: 3 }}>
+                        <PutClassMembers users={users} classId={selectedClass.classroom_id} />
+                    </Box>
+                    <Grid container spacing={3}>
+                        {selectedClassUsers.map(user => (
+                            <Grid item xs={12} sm={6} md={4} key={user.classroom_user_id}>
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
+                                        <Typography variant="body2" color="textSecondary">
+                                            {user.role}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button
+                                            size="small"
+                                            onClick={() => handleClassUserDelete(user.classroom_user_id)}
+                                            color="secondary"
+                                            disabled={deleting}
+                                        >
+                                            {deleting ? 'Deleting...' : 'Delete'}
+                                        </Button>
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+            )}
+        </Box>
     );
 }
 

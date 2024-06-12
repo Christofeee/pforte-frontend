@@ -16,8 +16,8 @@ export default function RootLayout({ children }) {
     <SessionProviderWrapper>
       <html lang="en">
         <body className={inter.className}>
-          <div className=''><Nav /></div>
-          <div>{children}</div>
+          <div position="sticky"><Nav /></div>
+          <div style={{marginTop:'60px'}}>{children}</div>
           <div><Footer /></div>
         </body>
       </html>
