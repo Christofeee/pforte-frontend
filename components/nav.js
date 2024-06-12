@@ -27,6 +27,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { CircularProgress, Backdrop } from '@mui/material';
 
 async function keycloakSessionLogOut() {
   try {
@@ -41,13 +42,7 @@ async function keycloakSessionLogOut() {
   }
 }
 
-const handleSignIn = async () => {
-  try {
-    signIn("keycloak");
-  } catch (error) {
-    console.error("Error during login:", error);
-  }
-};
+
 
 // const pages = ['page'];
 // const settings = ['Profile', 'About Us', 'Logout'];
@@ -56,6 +51,7 @@ function Nav() {
 
   // const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   // const handleOpenNavMenu = (event) => {
   //   setAnchorElNav(event.currentTarget);
@@ -64,11 +60,21 @@ function Nav() {
     setAnchorElUser(event.currentTarget);
   };
 
+  const handleSignIn = async () => {
+    setLoading(true);
+    try {
+      signIn("keycloak");
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
+
   // const handleCloseNavMenu = () => {
   //   setAnchorElNav(null);
   // };
 
   const handleCloseUserMenu = (key) => {
+    setLoading(true);
     setAnchorElUser(null);
     const functionMap = {
       'Logout': keycloakSessionLogOut,
@@ -96,13 +102,15 @@ function Nav() {
 
 
     if (status == "loading") {
+      setLoading(true)
       return <div className="my-3">Loading...</div>;
     } else if (session) {
+      setLoading(false)
       return (
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Open settings">
-            <div onClick={handleOpenUserMenu} style={{ padding: '8px', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
-              <Typography variant="h6" className="text-blue-50">
+            <div onClick={handleOpenUserMenu} style={{ padding: '', cursor: 'pointer', borderRadius: '4px', backgroundColor: '', display: 'inline-block', alignItems: 'center' }}>
+              <Typography variant="body" className="text-blue-50">
                 {session.user.name}
               </Typography>
               {session.roles.filter(role => ['admin', 'teacher', 'student'].includes(role)).map(role => (
@@ -144,7 +152,7 @@ function Nav() {
 
       );
     }
-
+    setLoading(false)
     return (
       <div className="my-3">
         <button style={{ backgroundColor: '#4a0080', border: 'none', boxShadow: "0px 0px .5rem black" }}
@@ -160,9 +168,14 @@ function Nav() {
     <AppBar
       sx={{
         backgroundColor: '#6a5bcd',
-        borderBottomLeftRadius: '30px', 
+        borderBottomLeftRadius: '30px',
         borderBottomRightRadius: '30px',
       }}>
+      {loading && ( // Conditionally render loading spinner if loading state is true
+        <Backdrop open={loading} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'white', color: '#8a2ce2' }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', padding: '5px' }}>
@@ -189,6 +202,7 @@ function Nav() {
           </div>
         </Toolbar>
       </Container>
+
     </AppBar>
 
   );

@@ -124,12 +124,12 @@ export default function ManageClassrooms() {
                     </Box>
                     <Grid container spacing={3}>
                         {classes.map((classItem) => (
-                            <Grid item xs={12} sm={6} md={4} key={classItem.classroom_id}>
+                            <Grid item xs={12} sm={6} md={6} key={classItem.classroom_id}>
                                 <Card>
                                     <CardContent onClick={() => handleEnterClass(classItem)}>
                                         <Grid container alignItems="center" justifyContent="space-between">
                                             <Grid item>
-                                                    <Typography variant="h5">{classItem.name}</Typography>
+                                                    <Typography variant="h6">{classItem.name}</Typography>
                                                     <Typography variant="body2" color="textSecondary">
                                                         {classItem.description}
                                                     </Typography>

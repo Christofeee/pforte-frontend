@@ -14,7 +14,7 @@ export default async function Teacher() {
     return (
         <AuthCheck session={session} roleToCheck="teacher">
             <main className="text-center">
-                <Dashboard />
+                <Dashboard userID={userID}/>
             </main>
         </AuthCheck>
     );
