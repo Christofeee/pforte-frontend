@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import getClassesByUserId from './getClassesByUserId';
+import { useRouter } from 'next/navigation';
 
 import SearchIcon from '@mui/icons-material/Search';
 
 export default function Classes({ userID }) {
+    const router = useRouter();
     const [classes, setClasses] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -30,10 +32,16 @@ export default function Classes({ userID }) {
         );
     };
 
+    const handleEnterClass = (classId) => {
+        // Ensure classId is a string
+        // const stringClassId = typeof classId === 'string' ? classId : classId.toString();
+        router.push(`/teacher/classroom/${classId}`);
+    }
+
     return (
         <div>
-            <div style={{ display: 'flex', alignItems:'center', justifyContent: 'space-between' }}>
-                <div>My Classes</div>
+            <div className='pb-3' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>Assigned Classes</div>
                 <div style={{ position: 'relative' }}>
                     <input
                         type="text"
@@ -49,7 +57,7 @@ export default function Classes({ userID }) {
                         }}
                     />
                     <div style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
-                        <SearchIcon style={{ color: '#6a5bcd'}} />
+                        <SearchIcon style={{ color: '#6a5bcd' }} />
                     </div>
                 </div>
             </div>
@@ -73,7 +81,11 @@ export default function Classes({ userID }) {
                                             </ul>
                                         </Typography>
                                     </div>
-                                    <Button size="small" startIcon={<ArrowForwardIosIcon />} />
+                                    <Button
+                                        size="small"
+                                        startIcon={<ArrowForwardIosIcon />}
+                                        onClick={() => handleEnterClass(classItem.classroom_id)}
+                                    />
                                 </CardContent>
                             </Card>
                         </Grid>
