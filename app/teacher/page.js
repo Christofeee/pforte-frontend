@@ -8,8 +8,14 @@ import Dashboard from "./components/dashBoard";
 export default async function Teacher() {
     const session = await getServerSession(authOptions);
     const access_token = await getAccessToken();
+    let userID
+    try {
+        userID = ParseJwt(access_token).sub
 
-    const userID = ParseJwt(access_token).sub
+    } catch (error) {
+        console.error('Not signed In', error);
+    }
+    
 
     return (
         <AuthCheck session={session} roleToCheck="teacher">
