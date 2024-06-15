@@ -20,10 +20,12 @@ export default async function Marks({ params }) {
 
   return (
     <AuthCheck session={session} roleToCheck="teacher">
-      <main className="text-center">
-        <ClassName text='CLass Name' />
+      <main className="p-5">
+        <ClassName text='Class Name' />
         <ClassNav classId={params.id} />
-        Marks
+        <div className="p-5">
+          Marks
+        </div>
       </main>
     </AuthCheck>
   );

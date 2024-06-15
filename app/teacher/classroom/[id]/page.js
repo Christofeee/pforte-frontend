@@ -7,7 +7,7 @@ import ClassName from "./components/className";
 import ClassNav from "./components/classNav";
 import Summary from "./summary/summary";
 
-export default async function TeacherClassroom({params}) {
+export default async function TeacherClassroom({ params }) {
     const session = await getServerSession(authOptions);
     const access_token = await getAccessToken();
 
@@ -21,11 +21,13 @@ export default async function TeacherClassroom({params}) {
 
     return (
         <AuthCheck session={session} roleToCheck="teacher">
-            <main className="text-center">
-                <ClassName text='Class Name'/>
-                <ClassNav classId={params.id}/>
+            <main className="p-5">
+                <ClassName text='Class Name' />
+                <ClassNav classId={params.id} />
+                <div className="p-5">
+                    <Summary />
+                </div>
             </main>
-            <Summary/>
         </AuthCheck>
     );
 }
