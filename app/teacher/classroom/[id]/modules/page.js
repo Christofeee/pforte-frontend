@@ -5,6 +5,7 @@ import ParseJwt from "@/utils/parseJwt";
 import AuthCheck from "@/utils/authCheck";
 import ClassName from "../components/className";
 import ClassNav from "../components/classNav";
+import Modulelist from "./components/moduleList";
 
 export default async function Modules({ params }) {
   const session = await getServerSession(authOptions);
@@ -24,7 +25,7 @@ export default async function Modules({ params }) {
         <ClassName text='Class Name' />
         <ClassNav classId={params.id} />
         <div className="p-5">
-          Modules
+          <Modulelist />
         </div>
       </main>
     </AuthCheck>

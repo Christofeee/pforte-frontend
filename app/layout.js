@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
       <html lang="en">
         <body className={inter.className}>
           <div position="sticky"><Nav /></div>
-          <div style={{marginTop:'60px'}}>{children}</div>
+          <div style={{marginTop:'13vh', minHeight:'83vh'}}>{children}</div>
           <div><Footer /></div>
         </body>
       </html>
