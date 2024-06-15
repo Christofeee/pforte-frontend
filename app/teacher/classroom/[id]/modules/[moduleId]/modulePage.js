@@ -12,6 +12,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Switch from '@mui/material/Switch';
+import Pdfs from './pdfs';
 
 export default function ModulePage({ classId, moduleId }) {
 
@@ -55,17 +56,17 @@ export default function ModulePage({ classId, moduleId }) {
         padding: '1rem',
     };
 
-    const renderContent = () => {
+    const renderContent = (moduleId) => {
         switch (currentPage) {
             case 'PDFs':
-                return <>pdfs</>
-                // return <PDFsContent />;
+                return <Pdfs moduleId={moduleId} />
+            // return <PDFsContent />;
             case 'Videos':
                 return <>videos</>
-                // return <VideosContent />;
+            // return <VideosContent />;
             case 'Assessments':
                 return <>assessments</>
-                // return <AssessmentsContent />;
+            // return <AssessmentsContent />;
             default:
                 return null;
         }
@@ -181,9 +182,9 @@ export default function ModulePage({ classId, moduleId }) {
                     </Box>
                 </Toolbar>
             </AppBar>
-            {
-                //i wanna check current page name and show the associate page
-            }
+            <div className="p-5">
+                {renderContent(moduleId)}
+            </div>
         </>
     );
 }
