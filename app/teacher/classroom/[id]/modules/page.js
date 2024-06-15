@@ -25,7 +25,7 @@ export default async function Modules({ params }) {
         <ClassName text='Class Name' />
         <ClassNav classId={params.id} />
         <div className="p-5">
-          <Modulelist />
+          <Modulelist classId={params.id}/>
         </div>
       </main>
     </AuthCheck>

@@ -35,7 +35,7 @@ export default function Classes({ userID }) {
     const handleEnterClass = (classId) => {
         // Ensure classId is a string
         // const stringClassId = typeof classId === 'string' ? classId : classId.toString();
-        router.push(`/teacher/classroom/${classId}`);
+        router.push(`/teacher/classroom/${classId}/summary`);
     }
 
     return (

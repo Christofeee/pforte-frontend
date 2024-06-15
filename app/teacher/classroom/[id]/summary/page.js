@@ -3,9 +3,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getAccessToken } from "@/utils/sessionTokenAccessor"
 import ParseJwt from "@/utils/parseJwt";
 import AuthCheck from "@/utils/authCheck";
-import ClassName from "./components/className";
-import ClassNav from "./components/classNav";
-import Summary from "./summary/summary";
+import ClassName from "../components/className";
+import ClassNav from "../components/classNav";
+import Summary from "./summary";
 
 export default async function TeacherClassroom({ params }) {
     const session = await getServerSession(authOptions);

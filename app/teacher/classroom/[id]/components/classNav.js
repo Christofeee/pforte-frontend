@@ -18,7 +18,7 @@ function ClassNav({ classId }) {
     const currentPath = usePathname()
     console.log(currentPath)
     const pages = [
-        { name: 'Summary', path: `/teacher/classroom/${classId}` },
+        { name: 'Summary', path: `/teacher/classroom/${classId}/summary` },
         { name: 'Modules', path: `/teacher/classroom/${classId}/modules` },
         { name: 'Assessments', path: `/teacher/classroom/${classId}/assessments` },
         { name: 'Announcements', path: `/teacher/classroom/${classId}/announcements` },
@@ -43,7 +43,7 @@ function ClassNav({ classId }) {
                         aria-controls="menu-appbar"
                         aria-haspopup="true"
                         onClick={handleOpenNavMenu}
-                        color="inherit"
+                        color="black"
                     >
                         <MenuIcon />
                     </IconButton>
@@ -66,13 +66,27 @@ function ClassNav({ classId }) {
                         }}
                     >
                         {pages.map((page) => (
-                            <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                                <Typography textAlign="center">
-                                    <Link href={page.path} passHref style={{ textDecoration: 'none', color: 'inherit' }}>
-                                        {page.name}
-                                    </Link>
-                                </Typography>
-                            </MenuItem>
+                            <Link href={page.path} passHref key={page.name}>
+                                <Button
+                                    onClick={handleCloseNavMenu}
+                                    sx={{
+                                        width:'100%',
+                                        my: 2,
+                                        color: currentPath.includes(page.path) ? 'white' : 'black',
+                                        display: 'block',
+                                        textTransform: 'none',
+                                        mr: 2,
+                                        backgroundColor: currentPath.includes(page.path) ? '#6a5bcd' : 'transparent',
+                                        transition: 'background-color 0.3s ease,color 0.5s ease', // Transition for transform change
+                                        '&:hover': {
+                                            backgroundColor: '#98fb98',
+                                            color: 'black'
+                                        },
+                                    }}
+                                >
+                                    {page.name}
+                                </Button>
+                            </Link>
                         ))}
                     </Menu>
                 </Box>
@@ -84,11 +98,11 @@ function ClassNav({ classId }) {
                                 onClick={handleCloseNavMenu}
                                 sx={{
                                     my: 2,
-                                    color: currentPath === page.path ? 'white' : 'black',
+                                    color: currentPath.includes(page.path) ? 'white' : 'black',
                                     display: 'block',
                                     textTransform: 'none',
                                     mr: 2,
-                                    backgroundColor: currentPath === page.path ? '#6a5bcd' : 'transparent',
+                                    backgroundColor: currentPath.includes(page.path) ? '#6a5bcd' : 'transparent',
                                     transition: 'background-color 0.3s ease,color 0.5s ease', // Transition for transform change
                                     '&:hover': {
                                         backgroundColor: '#98fb98',
