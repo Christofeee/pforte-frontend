@@ -60,8 +60,8 @@ export default function ModulePage({ classId, moduleId }) {
     const renderContent = (moduleId) => {
         switch (currentPage) {
             case 'PDFs':
-                return <EdgestoreTest/>
-                // return <Pdfs moduleId={moduleId} />
+                // return <EdgestoreTest/>
+                return <Pdfs moduleId={moduleId} />
             // return <PDFsContent />;
             case 'Videos':
                 return <>videos</>
