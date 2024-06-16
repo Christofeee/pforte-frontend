@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Switch from '@mui/material/Switch';
 import Pdfs from './pdfs';
+import EdgestoreTest from "../../components/edgestoreTest";
 
 export default function ModulePage({ classId, moduleId }) {
 
@@ -59,7 +60,8 @@ export default function ModulePage({ classId, moduleId }) {
     const renderContent = (moduleId) => {
         switch (currentPage) {
             case 'PDFs':
-                return <Pdfs moduleId={moduleId} />
+                return <EdgestoreTest/>
+                // return <Pdfs moduleId={moduleId} />
             // return <PDFsContent />;
             case 'Videos':
                 return <>videos</>
