@@ -52,7 +52,7 @@ export default function ModuleList({ classId }) {
         }
     }
 
-    const enterModule = (classId, moduleId = 2) => {
+    const enterModule = (classId, moduleId) => {
         router.push(`/teacher/classroom/${classId}/modules/${moduleId}`)
     }
 
@@ -79,7 +79,7 @@ export default function ModuleList({ classId }) {
                                 </Typography>
                             </Box>
                             <Button
-                                onClick={() => enterModule(classId)}
+                                onClick={() => enterModule(classId, module.id)}
                                 sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: '16px' }}>
                                 <ArrowForwardIosIcon />
                             </Button>

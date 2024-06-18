@@ -14,12 +14,33 @@ import MenuItem from '@mui/material/MenuItem';
 import Switch from '@mui/material/Switch';
 import Pdfs from './pdfs';
 import EdgestoreTest from "../../components/edgestoreTest";
+import getModuleById from "../utils/getModuleById";
 
 export default function ModulePage({ classId, moduleId }) {
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [currentPage, setCurrentPage] = React.useState('PDFs');
     const [switchChecked, setSwitchChecked] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const [moduleData, setModuleData] = React.useState(null);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true); // Set loading state to true before fetching data
+
+                const data = await getModuleById(moduleId)
+                setModuleData(data);
+
+                setLoading(false); // Set loading state to false after fetching data
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setLoading(false); // Set loading state to false in case of error
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const pages = [
         { name: 'PDFs' },
@@ -79,7 +100,7 @@ export default function ModulePage({ classId, moduleId }) {
             <div style={containerStyle}>
                 <BackButton />
                 <Typography variant="h6" noWrap style={{ padding: '1rem' }}>
-                    Module Name {moduleId}
+                    {loading ? "Loading..." : moduleData?.name}
                 </Typography>
                 <Typography variant="body" noWrap style={editStyle}>
                     Edit

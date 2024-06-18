@@ -24,10 +24,10 @@ export default async function Module({ params }) {
     return (
         <AuthCheck session={session} roleToCheck="teacher">
             <main className="p-5">
-                <ClassName text={`Class Name ${params.id}`} />
+                <ClassName classId={params.id} />
                 <ClassNav classId={params.id} />
                 <div className="p-5">
-                    <ModulePage classId={params.id} moduleId={params.moduleId}/>
+                    <ModulePage classId={params.id} moduleId={params.moduleId} />
                 </div>
             </main>
         </AuthCheck>
