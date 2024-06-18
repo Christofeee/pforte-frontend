@@ -18,7 +18,7 @@ export default function ModuleList({ classId }) {
             try {
                 setLoading(true); // Set loading state to true before fetching data
 
-                const modulesData = await getModules()
+                const modulesData = await getModules(classId)
                 setModules(modulesData);
 
                 setLoading(false); // Set loading state to false after fetching data
