@@ -1,9 +1,13 @@
 import { Button, Grid, Modal, Box, Typography } from "@mui/material";
 import { useState } from "react";
 import FileDropZone from "../../components/fileDropZone";
+import uploadPdf from "../utils/uploadPdf";
 
 export default function Pdfs({ moduleId }) {
     const [openModal, setOpenModal] = useState(false);
+    const [fileSelected, setFileSelected] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleOpenModal = () => {
         setOpenModal(true);
@@ -11,11 +15,29 @@ export default function Pdfs({ moduleId }) {
 
     const handleCloseModal = () => {
         setOpenModal(false);
+        setErrorMessage(''); // Clear error message on modal close
     };
 
     const handleFileDrop = (file) => {
-        // Handle the dropped file here
-        console.log('File dropped:', file);
+        setSelectedFile(file);
+        setFileSelected(true);
+    };
+
+    const handleConfirmUpload = async () => {
+        try {
+            console.log('Confirming upload...');
+            await uploadPdf(selectedFile);
+            handleCloseModal();
+        } catch (error) {
+            console.error('Error uploading pdf:', error);
+            if (error.response) {
+                setErrorMessage(`Error: ${error.response.data.error}`);
+            } else if (error.request) {
+                setErrorMessage('Error: No response received from the server');
+            } else {
+                setErrorMessage(`Error: ${error.message}`);
+            }
+        }
     };
 
     return (
@@ -94,12 +116,36 @@ export default function Pdfs({ moduleId }) {
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
                         width: 400,
-                        bgcolor: 'background.paper',
+                        bgcolor: 'white',
                         boxShadow: 24,
                         p: 4,
+                        borderRadius: '10px',
                     }}
                 >
-                    <FileDropZone onDrop={handleFileDrop} />
+                    <FileDropZone onFileDrop={handleFileDrop} setFileSelected={setFileSelected} />
+
+                    {/* Error message display */}
+                    {errorMessage && (
+                        <Typography variant="body2" color="error" sx={{ marginTop: '10px' }}>
+                            {errorMessage}
+                        </Typography>
+                    )}
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            marginTop: '20px',
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            onClick={handleConfirmUpload}
+                            disabled={!fileSelected}
+                        >
+                            Confirm Upload
+                        </Button>
+                    </Box>
                 </Box>
             </Modal>
         </>
