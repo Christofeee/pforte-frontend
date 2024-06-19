@@ -2,8 +2,10 @@ import { Button, Grid, Modal, Box, Typography } from "@mui/material";
 import { useState } from "react";
 import FileDropZone from "../../components/fileDropZone";
 import uploadPdf from "../utils/uploadPdf";
+import PdfFiles from "./pdfFiles";
 
 export default function Pdfs({ moduleId }) {
+    
     const [openModal, setOpenModal] = useState(false);
     const [fileSelected, setFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -26,7 +28,7 @@ export default function Pdfs({ moduleId }) {
     const handleConfirmUpload = async () => {
         try {
             console.log('Confirming upload...');
-            await uploadPdf(selectedFile);
+            await uploadPdf(selectedFile, moduleId);
             handleCloseModal();
         } catch (error) {
             console.error('Error uploading pdf:', error);
@@ -45,7 +47,7 @@ export default function Pdfs({ moduleId }) {
             <Grid container columnSpacing={2}>
                 <Grid item xs={10}>
                     <div className="bg-gray-100">
-                        PDFS {moduleId}
+                        <PdfFiles moduleId={moduleId}/>
                     </div>
                 </Grid>
                 <Grid item xs={2}>

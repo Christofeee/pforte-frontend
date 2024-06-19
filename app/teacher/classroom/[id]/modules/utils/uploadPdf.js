@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-export default async function uploadPdf(file) {
+export default async function uploadPdf(file, moduleId) {
     const formData = new FormData();
     formData.append('fileName', file);
+    formData.append('moduleId', moduleId);
 
     try {
         const response = await axios.post('http://localhost:8000/api/pdf', formData, {

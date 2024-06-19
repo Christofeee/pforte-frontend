@@ -79,6 +79,7 @@ export default function ModulePage({ classId, moduleId }) {
     };
 
     const renderContent = (moduleId) => {
+        console.log("in rendercontent", moduleId)
         switch (currentPage) {
             case 'PDFs':
                 // return <EdgestoreTest/>
