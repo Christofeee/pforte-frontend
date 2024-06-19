@@ -4,8 +4,8 @@ import FileDropZone from "../../components/fileDropZone";
 import uploadPdf from "../utils/uploadPdf";
 import PdfFiles from "./pdfFiles";
 
-export default function Pdfs({ moduleId }) {
-    
+export default function Pdfs({ moduleId, isStudent }) {
+
     const [openModal, setOpenModal] = useState(false);
     const [fileSelected, setFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -47,62 +47,65 @@ export default function Pdfs({ moduleId }) {
             <Grid container columnSpacing={2}>
                 <Grid item xs={10}>
                     <div className="p-5">
-                        <PdfFiles moduleId={moduleId}/>
+                        <PdfFiles moduleId={moduleId} isStudent={isStudent} />
                     </div>
                 </Grid>
-                <Grid item xs={2}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Button
-                            size="small"
-                            variant="text"
-                            sx={{
-                                textTransform: 'none',
-                                fontSize: '0.8rem',
-                                marginBottom: '8px',
-                                bgcolor: '#cac1ff',
-                                color: 'black',
-                                '&:hover': {
-                                    bgcolor: '#98fb98',
-                                }
-                            }}
-                        >
-                            Select All
-                        </Button>
-                        <Button
-                            size="small"
-                            variant="text"
-                            sx={{
-                                textTransform: 'none',
-                                fontSize: '0.8rem',
-                                marginBottom: '8px',
-                                bgcolor: '#ffcccc',
-                                color: 'black',
-                                '&:hover': {
-                                    bgcolor: '#ff9999',
-                                }
-                            }}
-                        >
-                            Delete
-                        </Button>
-                        <Button
-                            size="small"
-                            variant="text"
-                            onClick={handleOpenModal}
-                            sx={{
-                                textTransform: 'none',
-                                fontSize: '0.8rem',
-                                marginBottom: '8px',
-                                bgcolor: '#cac1ff',
-                                color: 'black',
-                                '&:hover': {
-                                    bgcolor: '#98fb98',
-                                }
-                            }}
-                        >
-                            Upload
-                        </Button>
-                    </div>
-                </Grid>
+                {!isStudent && (
+                    <Grid item xs={2}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <Button
+                                size="small"
+                                variant="text"
+                                sx={{
+                                    textTransform: 'none',
+                                    fontSize: '0.8rem',
+                                    marginBottom: '8px',
+                                    bgcolor: '#cac1ff',
+                                    color: 'black',
+                                    '&:hover': {
+                                        bgcolor: '#98fb98',
+                                    }
+                                }}
+                            >
+                                Select All
+                            </Button>
+                            <Button
+                                size="small"
+                                variant="text"
+                                sx={{
+                                    textTransform: 'none',
+                                    fontSize: '0.8rem',
+                                    marginBottom: '8px',
+                                    bgcolor: '#ffcccc',
+                                    color: 'black',
+                                    '&:hover': {
+                                        bgcolor: '#ff9999',
+                                    }
+                                }}
+                            >
+                                Delete
+                            </Button>
+                            <Button
+                                size="small"
+                                variant="text"
+                                onClick={handleOpenModal}
+                                sx={{
+                                    textTransform: 'none',
+                                    fontSize: '0.8rem',
+                                    marginBottom: '8px',
+                                    bgcolor: '#cac1ff',
+                                    color: 'black',
+                                    '&:hover': {
+                                        bgcolor: '#98fb98',
+                                    }
+                                }}
+                            >
+                                Upload
+                            </Button>
+                        </div>
+                    </Grid>
+                )}
+
             </Grid>
 
             <Modal

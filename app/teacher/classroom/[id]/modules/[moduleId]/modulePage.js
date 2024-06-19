@@ -83,7 +83,7 @@ export default function ModulePage({ classId, moduleId }) {
         switch (currentPage) {
             case 'PDFs':
                 // return <EdgestoreTest/>
-                return <Pdfs moduleId={moduleId} />
+                return <Pdfs moduleId={moduleId} isStudent={switchChecked} />
             // return <PDFsContent />;
             case 'Videos':
                 return <>videos</>
