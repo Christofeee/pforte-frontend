@@ -46,7 +46,7 @@ export default function Pdfs({ moduleId }) {
         <>
             <Grid container columnSpacing={2}>
                 <Grid item xs={10}>
-                    <div className="bg-gray-100">
+                    <div className="p-5">
                         <PdfFiles moduleId={moduleId}/>
                     </div>
                 </Grid>
