@@ -31,7 +31,7 @@ export default function Pdfs({ moduleId, isStudent }) {
     // for delte
     const [showDeleteWarning, setShowDeleteWarning] = useState(false)
     const [showConfirmDelete, setShowConfirmDelete] = useState(false)
-    
+
     const [needRefetch, setNeedRefetch] = useState(false)
 
     useEffect(() => {
@@ -314,6 +314,14 @@ export default function Pdfs({ moduleId, isStudent }) {
                             variant="contained"
                             onClick={handleConfirmUpload}
                             disabled={!fileSelected}
+                            sx={{
+                                bgcolor: "#cac1ff",
+                                color: "black",
+                                '&:hover': {
+                                    bgcolor: '#98fb98',
+                                    color: 'black'
+                                }
+                            }}
                         >
                             Confirm Upload
                         </Button>
@@ -339,17 +347,20 @@ export default function Pdfs({ moduleId, isStudent }) {
                         borderRadius: '10px',
                     }}
                 >
-                    <h2 id="delete-pdf-modal-title">Warning</h2>
-                    <p id="delete-pdf-modal-description">You need to select PDF(s) to be deleted.</p>
-                    <Button variant="contained" onClick={() => setShowDeleteWarning(false)}
-                        sx={{
-                            bgcolor: "#6a5bcd",
-                            '&:hover': {
-                                bgcolor: '#98fb98',
-                                color: 'black'
-                            }
-                        }}>
-                        Close</Button>
+                    <div className="p-3">
+                        <p id="delete-pdf-modal-description" className="py-2">You need to select PDF(s) to be deleted.</p>
+                    </div>
+                    <div className="text-end">
+                        <Button variant="contained" onClick={() => setShowDeleteWarning(false)}
+                            sx={{
+                                bgcolor: "#6a5bcd",
+                                '&:hover': {
+                                    bgcolor: '#98fb98',
+                                    color: 'black'
+                                }
+                            }}>
+                            Close</Button>
+                    </div>
                 </Box>
             </Modal >
             <Modal
@@ -358,21 +369,45 @@ export default function Pdfs({ moduleId, isStudent }) {
                 aria-labelledby="delete-pdf-modal-title"
                 aria-describedby="delete-pdf-modal-description"
             >
-                <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 400,
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    p: 4,
-                }}>
-                    <h2 id="delete-pdf-modal-title">Warning</h2>
-                    <p id="delete-pdf-modal-description">Selected PDF(s) will be delted.</p>
-                    <Button variant="contained" onClick={() => deletePdf()}>Confirm</Button>
-                    <Button variant="contained" onClick={() => setShowConfirmDelete(false)}>Cancel</Button>
-                </div>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'white',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '10px',
+                    }}
+                >
+                    <div className="p-3">
+                        <h2 id="delete-pdf-modal-title" style={{ color: "red", fontSize: "large" }} className="py-2">Warning:</h2>
+                        <p id="delete-pdf-modal-description" className="py-2">Selected PDF(s) will be deleted.</p>
+                    </div>
+                    <div className="text-end">
+                        <Button variant="contained" onClick={() => deletePdf()}
+                            className="mx-3"
+                            sx={{
+                                bgcolor: "#ffcccc",
+                                color: 'black',
+                                '&:hover': {
+                                    bgcolor: '#ff9999',
+                                    color: 'black'
+                                }
+                            }}>Confirm <DeleteOutlineIcon /></Button>
+                        <Button variant="contained" onClick={() => setShowConfirmDelete(false)}
+                            sx={{
+                                color: "black",
+                                bgcolor: "#cac1ff",
+                                '&:hover': {
+                                    bgcolor: '#98fb98',
+                                    color: 'black'
+                                }
+                            }}>Cancel</Button>
+                    </div>
+                </Box>
             </Modal>
         </>
     );
