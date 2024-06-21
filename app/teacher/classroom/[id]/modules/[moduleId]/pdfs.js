@@ -134,7 +134,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                             }
                         }}
                     >
-                         <UploadFileIcon/>
+                        <UploadFileIcon />
                     </Button>
                 </div>
             )}
@@ -142,20 +142,21 @@ export default function Pdfs({ moduleId, isStudent }) {
                 {/* <PdfFiles moduleId={moduleId} isStudent={isStudent} /> */}
                 {loading && <CircularProgress />}
                 {!loading && pdfs && pdfs.length > 0 && (
-                    <Grid container spacing={0}>
+                    <Grid container spacing={3}>
                         {pdfs.map((pdf, index) => (
-                            <Grid item key={index} xs={3} sm={3} md={3} lg={3}>
+                            <Grid item key={index} xs={6} sm={4} md={3} lg={2}>
                                 {!isStudent && (
                                     <div
-                                        style={{ width: "50%", height: "100%", display: "block", textDecoration: "none" }}
+                                        style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
                                     >
-                                        <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                                            <ButtonBase
-                                            // onClick={() => handlePdfSelect()}
-                                            >
-                                                <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                        <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+                                            <ButtonBase style={{ flexDirection: "column" }}>
+                                                <div style={{ position: "absolute", top: 0, left: 0 }}>
+                                                    <Checkbox />
+                                                </div>
+                                                <div>
                                                     <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
-                                                </CardContent>
+                                                </div>
                                             </ButtonBase>
                                             <Typography
                                                 variant="subtitle1"
@@ -165,6 +166,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                                             </Typography>
                                             <div className="p-3">
                                                 <ButtonBase
+                                                className="rounded"
                                                     onClick={() => handlePdfClick(pdf)}
                                                     sx={{
                                                         width: "100%",
@@ -177,6 +179,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                                                 </ButtonBase>
                                             </div>
                                         </Card>
+
                                     </div>
                                 )}
                                 {isStudent && (
@@ -223,9 +226,6 @@ export default function Pdfs({ moduleId, isStudent }) {
                     />
                 )}
             </div>
-
-
-
             <Modal
                 open={openModal}
                 onClose={handleCloseModal}
