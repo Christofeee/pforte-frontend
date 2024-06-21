@@ -16,7 +16,6 @@ export default function Pdfs({ moduleId, isStudent }) {
     const [openModal, setOpenModal] = useState(false);
     const [fileSelected, setFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [selectedItem, setSelectedItem] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
 
     // for pdfs
@@ -81,6 +80,15 @@ export default function Pdfs({ moduleId, isStudent }) {
         setSelectAll(!selectAll);
     };
 
+    const deletePdf = () => {
+        if(selectedItems.length > 0){
+            console.log("The following PDF IDs are about to be deleted.")
+            console.log(selectedItems)
+        } else {
+            console.log ("No pdf is selected.")
+        }
+    }
+
     const handleOpenModal = () => {
         setOpenModal(true);
     };
@@ -111,7 +119,7 @@ export default function Pdfs({ moduleId, isStudent }) {
             }
         }
     };
-    console.log("Selected Items: ", selectedItems)
+
     return (
         <>
             {!isStudent && (
@@ -126,6 +134,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                         </Typography>
                     </ButtonBase>
                     <Button
+                        onClick={()=>deletePdf()}
                         className="mx-1 py-3"
                         size="small"
                         variant="text"
