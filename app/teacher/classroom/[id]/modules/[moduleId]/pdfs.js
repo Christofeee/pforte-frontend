@@ -1,11 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Grid, Modal, Box, Typography, CircularProgress, Card, CardContent, ButtonBase, CardActions } from "@mui/material";
 import FileDropZone from "../../components/fileDropZone";
 import uploadPdf from "../utils/uploadPdf";
 import getPdfsById from "../utils/getPdfsById";
 import DocViewer, { PDFRenderer } from "@cyntler/react-doc-viewer";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import { Button, Grid, Modal, Box, Typography, CircularProgress, Card, CardContent, ButtonBase, CardActions, Checkbox } from "@mui/material";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 
@@ -91,147 +93,138 @@ export default function Pdfs({ moduleId, isStudent }) {
 
     return (
         <>
-            <Grid container columnSpacing={2}>
-                <Grid item xs={10}>
-                    <div className="p-5">
-                        {/* <PdfFiles moduleId={moduleId} isStudent={isStudent} /> */}
-                        {loading && <CircularProgress />}
-                        {!loading && pdfs && pdfs.length > 0 && (
-                            <Grid container spacing={2}>
-                                {pdfs.map((pdf, index) => (
-                                    <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
-                                        {!isStudent && (
-                                            <div
-                                                style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
-                                            >
-                                                <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                                                    <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                                                        <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
-                                                        <Typography variant="subtitle1" style={{ marginTop: "10px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                                            {pdf.title}
-                                                        </Typography>
-                                                        <Typography variant="body2" style={{ textAlign: "center" }}>
-                                                            {pdf.fileName}
-                                                        </Typography>
-                                                    </CardContent>
-                                                    <div className="p-3">
-                                                        <ButtonBase 
-                                                        onClick={() => handlePdfClick(pdf)} 
-                                                        sx={{
-                                                            width:"100%",
-                                                            backgroundColor:"#cac1ff",
-                                                            '&:hover': {
-                                                                backgroundColor:"#98fb98"
-                                                            }
-                                                        }}>
-                                                            <CardActions>View</CardActions>
-                                                        </ButtonBase>
-                                                    </div>
-                                                </Card>
-                                            </div>
-                                        )}
-                                        {isStudent && (
+            {!isStudent && (
+                <div className="d-flex text-end">
+                    <ButtonBase className="d-inline-block mx-5">
+                        <Checkbox />
+                        <Typography className="p-1">
+                            Select All
+                        </Typography>
+                    </ButtonBase>
+                    <Button
+                        className="mx-1 py-3"
+                        size="small"
+                        variant="text"
+                        sx={{
+                            textTransform: 'none',
+                            fontSize: '0.8rem',
+                            marginBottom: '8px',
+                            bgcolor: '#ffcccc',
+                            color: 'black',
+                            '&:hover': {
+                                bgcolor: '#ff9999',
+                            }
+                        }}
+                    >
+                        <DeleteOutlineIcon />
+                    </Button>
+                    <Button
+                        className="mx-1 py-3"
+                        size="small"
+                        variant="text"
+                        onClick={handleOpenModal}
+                        sx={{
+                            textTransform: 'none',
+                            fontSize: '0.8rem',
+                            marginBottom: '8px',
+                            bgcolor: '#cac1ff',
+                            color: 'black',
+                            '&:hover': {
+                                bgcolor: '#98fb98',
+                            }
+                        }}
+                    >
+                         <UploadFileIcon/>
+                    </Button>
+                </div>
+            )}
+            <div className="p-5">
+                {/* <PdfFiles moduleId={moduleId} isStudent={isStudent} /> */}
+                {loading && <CircularProgress />}
+                {!loading && pdfs && pdfs.length > 0 && (
+                    <Grid container spacing={0}>
+                        {pdfs.map((pdf, index) => (
+                            <Grid item key={index} xs={3} sm={3} md={3} lg={3}>
+                                {!isStudent && (
+                                    <div
+                                        style={{ width: "50%", height: "100%", display: "block", textDecoration: "none" }}
+                                    >
+                                        <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
                                             <ButtonBase
-                                                style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
-                                                onClick={() => handlePdfClick(pdf)}
+                                            // onClick={() => handlePdfSelect()}
                                             >
-                                                <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-                                                    <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                                                        <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
-                                                        <Typography variant="subtitle1" style={{ marginTop: "10px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                                            {pdf.title}
-                                                        </Typography>
-                                                        <Typography variant="body2" style={{ textAlign: "center" }}>
-                                                            {pdf.fileName}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </Card>
+                                                <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                                    <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
+                                                </CardContent>
                                             </ButtonBase>
-                                        )}
-                                    </Grid>
-                                ))}
+                                            <Typography
+                                                variant="subtitle1"
+                                                className="px-3"
+                                                style={{ marginTop: "10px", textAlign: "start", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                {pdf.title}
+                                            </Typography>
+                                            <div className="p-3">
+                                                <ButtonBase
+                                                    onClick={() => handlePdfClick(pdf)}
+                                                    sx={{
+                                                        width: "100%",
+                                                        backgroundColor: "#cac1ff",
+                                                        '&:hover': {
+                                                            backgroundColor: "#98fb98"
+                                                        }
+                                                    }}>
+                                                    <CardActions>View</CardActions>
+                                                </ButtonBase>
+                                            </div>
+                                        </Card>
+                                    </div>
+                                )}
+                                {isStudent && (
+                                    <ButtonBase
+                                        style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
+                                        onClick={() => handlePdfClick(pdf)}
+                                    >
+                                        <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                                            <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                                <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
+                                                <Typography variant="subtitle1" style={{ marginTop: "10px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                    {pdf.title}
+                                                </Typography>
+                                                <Typography variant="body2" style={{ textAlign: "center" }}>
+                                                    {pdf.fileName}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </ButtonBase>
+                                )}
                             </Grid>
-
-                        )}
-                        {pdfLoading && <CircularProgress />}
-                        {selectedPdf && !pdfLoading && (
-                            <DocViewer
-                                documents={selectedPdf}
-                                pluginRenderers={[PDFRenderer]}
-                                theme={{
-                                    primary: "#cac1ff",
-                                    secondary: "cyan",
-                                    tertiary: "#cac1ff",
-                                    textPrimary: "black",
-                                    textSecondary: "#5296d8",
-                                    textTertiary: "#00000099",
-                                    viewer: {
-                                        borderRadius: 10,
-                                    },
-                                    disableThemeScrollbar: false,
-                                }}
-                                className="p-5"
-                            />
-                        )}
-                    </div>
-                </Grid>
-                {!isStudent && (
-                    <Grid item xs={2}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <Button
-                                size="small"
-                                variant="text"
-                                sx={{
-                                    textTransform: 'none',
-                                    fontSize: '0.8rem',
-                                    marginBottom: '8px',
-                                    bgcolor: '#cac1ff',
-                                    color: 'black',
-                                    '&:hover': {
-                                        bgcolor: '#98fb98',
-                                    }
-                                }}
-                            >
-                                Select All
-                            </Button>
-                            <Button
-                                size="small"
-                                variant="text"
-                                sx={{
-                                    textTransform: 'none',
-                                    fontSize: '0.8rem',
-                                    marginBottom: '8px',
-                                    bgcolor: '#ffcccc',
-                                    color: 'black',
-                                    '&:hover': {
-                                        bgcolor: '#ff9999',
-                                    }
-                                }}
-                            >
-                                Delete
-                            </Button>
-                            <Button
-                                size="small"
-                                variant="text"
-                                onClick={handleOpenModal}
-                                sx={{
-                                    textTransform: 'none',
-                                    fontSize: '0.8rem',
-                                    marginBottom: '8px',
-                                    bgcolor: '#cac1ff',
-                                    color: 'black',
-                                    '&:hover': {
-                                        bgcolor: '#98fb98',
-                                    }
-                                }}
-                            >
-                                Upload
-                            </Button>
-                        </div>
+                        ))}
                     </Grid>
-                )}
 
-            </Grid>
+                )}
+                {pdfLoading && <CircularProgress />}
+                {selectedPdf && !pdfLoading && (
+                    <DocViewer
+                        documents={selectedPdf}
+                        pluginRenderers={[PDFRenderer]}
+                        theme={{
+                            primary: "#cac1ff",
+                            secondary: "cyan",
+                            tertiary: "#cac1ff",
+                            textPrimary: "black",
+                            textSecondary: "#5296d8",
+                            textTertiary: "#00000099",
+                            viewer: {
+                                borderRadius: 10,
+                            },
+                            disableThemeScrollbar: false,
+                        }}
+                        className="p-5"
+                    />
+                )}
+            </div>
+
+
 
             <Modal
                 open={openModal}
