@@ -1,8 +1,13 @@
-import { Button, Grid, Modal, Box, Typography } from "@mui/material";
-import { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Button, Grid, Modal, Box, Typography, CircularProgress, Card, CardContent, ButtonBase, CardActions } from "@mui/material";
 import FileDropZone from "../../components/fileDropZone";
 import uploadPdf from "../utils/uploadPdf";
-import PdfFiles from "./pdfFiles";
+import getPdfsById from "../utils/getPdfsById";
+import DocViewer, { PDFRenderer } from "@cyntler/react-doc-viewer";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import "react-pdf/dist/esm/Page/TextLayer.css";
+import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 export default function Pdfs({ moduleId, isStudent }) {
 
@@ -10,6 +15,48 @@ export default function Pdfs({ moduleId, isStudent }) {
     const [fileSelected, setFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
+
+    // for pdfs
+    const [pdfs, setPdfs] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedPdf, setSelectedPdf] = useState(null);
+    const [pdfLoading, setPdfLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const data = await getPdfsById(moduleId);
+                setPdfs(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [moduleId]);
+
+    const handlePdfClick = async (pdf) => {
+        try {
+            setPdfLoading(true);
+            const response = await axios.get(`http://localhost:8000/api/pdfs/download/${pdf.id}`, {
+                responseType: "blob",
+            });
+
+            const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+            const url = URL.createObjectURL(pdfBlob);
+
+            setSelectedPdf([{ uri: url, fileName: pdf.title }]);
+            setPdfLoading(false);
+        } catch (error) {
+            console.error("Error downloading PDF:", error);
+            setPdfLoading(false);
+        }
+    };
+
+    // ///////
 
     const handleOpenModal = () => {
         setOpenModal(true);
@@ -47,7 +94,85 @@ export default function Pdfs({ moduleId, isStudent }) {
             <Grid container columnSpacing={2}>
                 <Grid item xs={10}>
                     <div className="p-5">
-                        <PdfFiles moduleId={moduleId} isStudent={isStudent} />
+                        {/* <PdfFiles moduleId={moduleId} isStudent={isStudent} /> */}
+                        {loading && <CircularProgress />}
+                        {!loading && pdfs && pdfs.length > 0 && (
+                            <Grid container spacing={2}>
+                                {pdfs.map((pdf, index) => (
+                                    <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
+                                        {!isStudent && (
+                                            <div
+                                                style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
+                                            >
+                                                <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                                                    <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                                        <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
+                                                        <Typography variant="subtitle1" style={{ marginTop: "10px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                            {pdf.title}
+                                                        </Typography>
+                                                        <Typography variant="body2" style={{ textAlign: "center" }}>
+                                                            {pdf.fileName}
+                                                        </Typography>
+                                                    </CardContent>
+                                                    <div className="p-3">
+                                                        <ButtonBase 
+                                                        onClick={() => handlePdfClick(pdf)} 
+                                                        sx={{
+                                                            width:"100%",
+                                                            backgroundColor:"#cac1ff",
+                                                            '&:hover': {
+                                                                backgroundColor:"#98fb98"
+                                                            }
+                                                        }}>
+                                                            <CardActions>View</CardActions>
+                                                        </ButtonBase>
+                                                    </div>
+                                                </Card>
+                                            </div>
+                                        )}
+                                        {isStudent && (
+                                            <ButtonBase
+                                                style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
+                                                onClick={() => handlePdfClick(pdf)}
+                                            >
+                                                <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                                                    <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                                        <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
+                                                        <Typography variant="subtitle1" style={{ marginTop: "10px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                            {pdf.title}
+                                                        </Typography>
+                                                        <Typography variant="body2" style={{ textAlign: "center" }}>
+                                                            {pdf.fileName}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            </ButtonBase>
+                                        )}
+                                    </Grid>
+                                ))}
+                            </Grid>
+
+                        )}
+                        {pdfLoading && <CircularProgress />}
+                        {selectedPdf && !pdfLoading && (
+                            <DocViewer
+                                documents={selectedPdf}
+                                pluginRenderers={[PDFRenderer]}
+                                theme={{
+                                    primary: "#cac1ff",
+                                    secondary: "cyan",
+                                    tertiary: "#cac1ff",
+                                    textPrimary: "black",
+                                    textSecondary: "#5296d8",
+                                    textTertiary: "#00000099",
+                                    viewer: {
+                                        borderRadius: 10,
+                                    },
+                                    disableThemeScrollbar: false,
+                                }}
+                                className="p-5"
+                            />
+                        )}
                     </div>
                 </Grid>
                 {!isStudent && (
