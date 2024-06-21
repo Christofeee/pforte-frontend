@@ -30,8 +30,12 @@ export default function Pdfs({ moduleId, isStudent }) {
 
     // for delte
     const [showDeleteWarning, setShowDeleteWarning] = useState(false)
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false)
+    
+    const [needRefetch, setNeedRefetch] = useState(false)
 
     useEffect(() => {
+        console.log("fetching data")
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -45,7 +49,7 @@ export default function Pdfs({ moduleId, isStudent }) {
         };
 
         fetchData();
-    }, [moduleId]);
+    }, [moduleId, needRefetch]);
 
     const handlePdfClick = async (pdf) => {
         try {
@@ -83,14 +87,19 @@ export default function Pdfs({ moduleId, isStudent }) {
         setSelectAll(!selectAll);
     };
 
-    const deletePdf = () => {
+    const handleDeletePdf = () => {
         if (selectedItems.length > 0) {
-            console.log("The following PDF IDs are about to be deleted.")
-            console.log(selectedItems)
+            setShowConfirmDelete(true)
         } else {
             console.log("No pdf is selected.")
             setShowDeleteWarning(true)
         }
+    }
+
+    const deletePdf = () => {
+        console.log("DELETING: ", selectedItems)
+        setShowConfirmDelete(false)
+        setNeedRefetch(prevState => !prevState);
     }
 
     const handleOpenModal = () => {
@@ -112,6 +121,7 @@ export default function Pdfs({ moduleId, isStudent }) {
             console.log('Confirming upload...');
             await uploadPdf(selectedFile, moduleId);
             handleCloseModal();
+            setNeedRefetch(prevState => !prevState);
         } catch (error) {
             console.error('Error uploading pdf:', error);
             if (error.response) {
@@ -138,7 +148,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                         </Typography>
                     </ButtonBase>
                     <Button
-                        onClick={() => deletePdf()}
+                        onClick={() => handleDeletePdf()}
                         className="mx-1 py-3"
                         size="small"
                         variant="text"
@@ -312,7 +322,39 @@ export default function Pdfs({ moduleId, isStudent }) {
             </Modal>
             <Modal
                 open={showDeleteWarning}
-                onClose={()=>setShowDeleteWarning(false)}
+                onClose={() => setShowDeleteWarning(false)}
+                aria-labelledby="delete-pdf-modal-title"
+                aria-describedby="delete-pdf-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'white',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '10px',
+                    }}
+                >
+                    <h2 id="delete-pdf-modal-title">Warning</h2>
+                    <p id="delete-pdf-modal-description">You need to select PDF(s) to be deleted.</p>
+                    <Button variant="contained" onClick={() => setShowDeleteWarning(false)}
+                        sx={{
+                            bgcolor: "#6a5bcd",
+                            '&:hover': {
+                                bgcolor: '#98fb98',
+                                color: 'black'
+                            }
+                        }}>
+                        Close</Button>
+                </Box>
+            </Modal >
+            <Modal
+                open={showConfirmDelete}
+                onClose={() => setShowConfirmDelete(false)}
                 aria-labelledby="delete-pdf-modal-title"
                 aria-describedby="delete-pdf-modal-description"
             >
@@ -327,8 +369,9 @@ export default function Pdfs({ moduleId, isStudent }) {
                     p: 4,
                 }}>
                     <h2 id="delete-pdf-modal-title">Warning</h2>
-                    <p id="delete-pdf-modal-description">You need to select PDF(s) to be deleted.</p>
-                    <Button variant="contained" onClick={()=>setShowDeleteWarning(false)}>Close</Button>
+                    <p id="delete-pdf-modal-description">Selected PDF(s) will be delted.</p>
+                    <Button variant="contained" onClick={() => deletePdf()}>Confirm</Button>
+                    <Button variant="contained" onClick={() => setShowConfirmDelete(false)}>Cancel</Button>
                 </div>
             </Modal>
         </>
