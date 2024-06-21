@@ -28,6 +28,9 @@ export default function Pdfs({ moduleId, isStudent }) {
     const [selectedItems, setSelectedItems] = useState([]);
     const [selectAll, setSelectAll] = useState(false); // New state for "Select All" checkbox
 
+    // for delte
+    const [showDeleteWarning, setShowDeleteWarning] = useState(false)
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -81,11 +84,12 @@ export default function Pdfs({ moduleId, isStudent }) {
     };
 
     const deletePdf = () => {
-        if(selectedItems.length > 0){
+        if (selectedItems.length > 0) {
             console.log("The following PDF IDs are about to be deleted.")
             console.log(selectedItems)
         } else {
-            console.log ("No pdf is selected.")
+            console.log("No pdf is selected.")
+            setShowDeleteWarning(true)
         }
     }
 
@@ -125,7 +129,7 @@ export default function Pdfs({ moduleId, isStudent }) {
             {!isStudent && (
                 <div className="d-flex text-end">
                     <ButtonBase className="d-inline-block mx-5">
-                        <Checkbox 
+                        <Checkbox
                             checked={selectAll}
                             onChange={handleSelectAll}
                         />
@@ -134,7 +138,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                         </Typography>
                     </ButtonBase>
                     <Button
-                        onClick={()=>deletePdf()}
+                        onClick={() => deletePdf()}
                         className="mx-1 py-3"
                         size="small"
                         variant="text"
@@ -305,6 +309,27 @@ export default function Pdfs({ moduleId, isStudent }) {
                         </Button>
                     </Box>
                 </Box>
+            </Modal>
+            <Modal
+                open={showDeleteWarning}
+                onClose={()=>setShowDeleteWarning(false)}
+                aria-labelledby="delete-pdf-modal-title"
+                aria-describedby="delete-pdf-modal-description"
+            >
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    p: 4,
+                }}>
+                    <h2 id="delete-pdf-modal-title">Warning</h2>
+                    <p id="delete-pdf-modal-description">You need to select PDF(s) to be deleted.</p>
+                    <Button variant="contained" onClick={()=>setShowDeleteWarning(false)}>Close</Button>
+                </div>
             </Modal>
         </>
     );
