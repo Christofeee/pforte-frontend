@@ -16,6 +16,7 @@ export default function Pdfs({ moduleId, isStudent }) {
     const [openModal, setOpenModal] = useState(false);
     const [fileSelected, setFileSelected] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
 
     // for pdfs
@@ -23,6 +24,10 @@ export default function Pdfs({ moduleId, isStudent }) {
     const [loading, setLoading] = useState(false);
     const [selectedPdf, setSelectedPdf] = useState(null);
     const [pdfLoading, setPdfLoading] = useState(false);
+
+    // State to manage selected items
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false); // New state for "Select All" checkbox
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,7 +63,23 @@ export default function Pdfs({ moduleId, isStudent }) {
         }
     };
 
-    // ///////
+    const handleSelectItem = (id) => {
+        setSelectedItems((prevSelectedItems) =>
+            prevSelectedItems.includes(id)
+                ? prevSelectedItems.filter((itemId) => itemId !== id)
+                : [...prevSelectedItems, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelectedItems([]);
+        } else {
+            const allIds = pdfs.map(pdf => pdf.id);
+            setSelectedItems(allIds);
+        }
+        setSelectAll(!selectAll);
+    };
 
     const handleOpenModal = () => {
         setOpenModal(true);
@@ -90,13 +111,16 @@ export default function Pdfs({ moduleId, isStudent }) {
             }
         }
     };
-
+    console.log("Selected Items: ", selectedItems)
     return (
         <>
             {!isStudent && (
                 <div className="d-flex text-end">
                     <ButtonBase className="d-inline-block mx-5">
-                        <Checkbox />
+                        <Checkbox 
+                            checked={selectAll}
+                            onChange={handleSelectAll}
+                        />
                         <Typography className="p-1">
                             Select All
                         </Typography>
@@ -150,9 +174,11 @@ export default function Pdfs({ moduleId, isStudent }) {
                                         style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
                                     >
                                         <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
-                                            <ButtonBase style={{ flexDirection: "column" }}>
+                                            <ButtonBase
+                                                onClick={() => handleSelectItem(pdf.id)}
+                                                style={{ flexDirection: "column" }}>
                                                 <div style={{ position: "absolute", top: 0, left: 0 }}>
-                                                    <Checkbox />
+                                                    <Checkbox checked={selectedItems.includes(pdf.id)} />
                                                 </div>
                                                 <div>
                                                     <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
@@ -166,7 +192,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                                             </Typography>
                                             <div className="p-3">
                                                 <ButtonBase
-                                                className="rounded"
+                                                    className="rounded"
                                                     onClick={() => handlePdfClick(pdf)}
                                                     sx={{
                                                         width: "100%",
