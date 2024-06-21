@@ -44,11 +44,13 @@ export default function Pdfs({ moduleId, isStudent }) {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching data:", error);
+                setPdfs([]);
                 setLoading(false);
             }
         };
 
         fetchData();
+        setSelectedItems([]);
     }, [moduleId, needRefetch]);
 
     const handlePdfClick = async (pdf) => {
@@ -96,10 +98,24 @@ export default function Pdfs({ moduleId, isStudent }) {
         }
     }
 
-    const deletePdf = () => {
+    const deletePdf = async () => {
         console.log("DELETING: ", selectedItems)
-        setShowConfirmDelete(false)
-        setNeedRefetch(prevState => !prevState);
+        try {
+            const url = 'http://localhost:8000/api/pdfs'
+            const data = {
+                ids: selectedItems
+            }
+            console.log("DATA: ", data)
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            const response = await axios.delete(url, { data, headers });
+            console.log(response)
+            setShowConfirmDelete(false)
+            setNeedRefetch(prevState => !prevState);
+        } catch (error) {
+            console.error("Error Deleting PDF(s):", error);
+        }
     }
 
     const handleOpenModal = () => {
