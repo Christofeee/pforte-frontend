@@ -1,10 +1,11 @@
 'use client'
 
-import { Grid, Typography, Box, Button } from '@mui/material';
+import { Grid, Typography, Box, Button, ButtonBase, Modal, TextField } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import getModules from '../utils/getModules';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function ModuleList({ classId }) {
 
@@ -12,6 +13,12 @@ export default function ModuleList({ classId }) {
     const [loading, setLoading] = useState(false)
     const [modules, setModules] = useState([])
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAddModuleModal, setShowAddModuleModal] = useState(false)
+    const [data, setData] = useState({
+        name: '',
+        description: '',
+        classroom_id: classId
+    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,8 +71,40 @@ export default function ModuleList({ classId }) {
         );
     };
 
+    const handleFormChange = (event) => {
+        setData({ ...data, [event.target.name]: event.target.value });
+    };
+
+    const handleSubmitModule = async (event) => {
+        event.preventDefault();
+        console.log(data)
+        // setFormData(data);
+        // try {
+        //     await createClass(data);
+        //     // Optional: Add success message or close the modal
+        //     handleClose();
+        //     window.location.reload();
+        // } catch (error) {
+        //     console.error('Error creating user:', error);
+        // }
+    };
+
     return (
         <>
+            <div className='text-end'>
+                <ButtonBase
+                    onClick={() => setShowAddModuleModal(true)}
+                    className='p-3 rounded'
+                    sx={{
+                        bgcolor: '#98fb98',
+                        '&:hover': {
+                            bgcolor: '#5EFB5E'
+                        }
+                    }}>
+                    Add
+                    <AddIcon className='ms-1' />
+                </ButtonBase>
+            </div>
             {handleSearch().map((module) => (
                 <Grid container spacing={2} className='p-1 pb-5 mb-5' alignItems={'center'}>
                     <Grid item xs={12} md={9}>
@@ -97,6 +136,77 @@ export default function ModuleList({ classId }) {
                     </Grid>
                 </Grid>
             ))}
+            <Modal
+                open={showAddModuleModal}
+                onClose={() => setShowAddModuleModal(false)}
+                aria-labelledby="delete-pdf-modal-title"
+                aria-describedby="delete-pdf-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'white',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '10px',
+                    }}
+                >
+                    <div className="p-3">
+                        <h2 id="delete-pdf-modal-title" style={{ color: "", fontSize: "large" }}>Add Module</h2>
+                    </div>
+                    <div className="text-end">
+                        <form
+                            onSubmit={handleSubmitModule}
+                        >
+                            <TextField
+                                label="Module Name"
+                                name="name"
+                                value={data.name}
+                                onChange={handleFormChange}
+                                required
+                                margin="normal"
+                                fullWidth
+                            />
+                            <TextField
+                                label="Description"
+                                name="description"
+                                value={data.description}
+                                onChange={handleFormChange}
+                                required
+                                margin="normal"
+                                fullWidth
+                            />
+                            <div className='pt-5'>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    className="mx-3"
+                                    sx={{
+                                        bgcolor: '#98fb98',
+                                        color: "black",
+                                        '&:hover': {
+                                            bgcolor: '#5EFB5E'
+                                        }
+                                    }}>Confirm <AddIcon /></Button>
+                                <Button variant="contained" onClick={() => setShowAddModuleModal(false)}
+                                    sx={{
+                                        color: "black",
+                                        bgcolor: "#cac1ff",
+                                        '&:hover': {
+                                            bgcolor: '#98fb98',
+                                            color: 'black'
+                                        }
+                                    }}>Cancel</Button>
+                            </div>
+                        </form>
+
+                    </div>
+                </Box>
+            </Modal>
         </>
     );
 }
