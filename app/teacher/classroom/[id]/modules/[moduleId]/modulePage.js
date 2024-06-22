@@ -24,6 +24,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import AddIcon from '@mui/icons-material/Add';
 import getModuleById from "../utils/getModuleById";
+import { Assessment } from '@mui/icons-material';
+import ModuleAssessments from '../components/assessments';
 
 export default function ModulePage({ classId, moduleId }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -147,7 +149,7 @@ export default function ModulePage({ classId, moduleId }) {
             case 'Videos':
                 return <>videos</>
             case 'Assessments':
-                return <>assessments</>
+                return <ModuleAssessments moduleId={moduleId} isStudent={switchChecked} />
             default:
                 return null;
         }
