@@ -1,5 +1,6 @@
 'use client'
 
+import axios from "axios";
 import { Grid, Typography, Box, Button, ButtonBase, Modal, TextField } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useEffect, useState } from 'react';
@@ -8,16 +9,18 @@ import getModules from '../utils/getModules';
 import AddIcon from '@mui/icons-material/Add';
 
 export default function ModuleList({ classId }) {
-
+    console.log("CLASS ID TYPE IS HERE: ", typeof classId)
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [modules, setModules] = useState([])
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModuleModal, setShowAddModuleModal] = useState(false)
+    const [needRefetch, setNeedRefetch] = useState(false)
+
     const [data, setData] = useState({
         name: '',
         description: '',
-        classroom_id: classId
+        classroom_id: parseInt(classId, 10)
     });
 
     useEffect(() => {
@@ -36,7 +39,7 @@ export default function ModuleList({ classId }) {
         };
 
         fetchData();
-    }, []);
+    }, [needRefetch]);
 
     console.log(modules)
 
@@ -78,15 +81,24 @@ export default function ModuleList({ classId }) {
     const handleSubmitModule = async (event) => {
         event.preventDefault();
         console.log(data)
-        // setFormData(data);
-        // try {
-        //     await createClass(data);
-        //     // Optional: Add success message or close the modal
-        //     handleClose();
-        //     window.location.reload();
-        // } catch (error) {
-        //     console.error('Error creating user:', error);
-        // }
+        try {
+            const url = 'http://localhost:8000/api/module'
+            const newModuleData = {
+                name: data.name,
+                description: data.description,
+                classroom_id: data.classroom_id
+            }
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            console.log("NEW MODULE :", newModuleData)
+            const response = await axios.put(url, newModuleData, { headers });
+            console.log(response)
+            setShowAddModuleModal(false)
+            setNeedRefetch(prevState => !prevState);
+        } catch (error) {
+            console.error("Error Deleting PDF(s):", error);
+        }
     };
 
     return (
