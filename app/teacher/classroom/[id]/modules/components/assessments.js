@@ -7,7 +7,7 @@ import CardContent from '@mui/joy/CardContent';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import LinkIcon from '@mui/icons-material/Link';
 import Switch from '@mui/material/Switch';
-import { Tooltip } from '@mui/material';
+import { ButtonBase, Tooltip } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,8 +17,10 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import { Button, Typography, CircularProgress, Grid } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import getAssessmentsByModuleId from "../utils/getAssessmentsByModuleId";
+import AddIcon from '@mui/icons-material/Add';
 
 import getSubmissions from "../utils/getSubmissions";
+import CreateAssessmentDialog from "./createAssignmentDialog";
 
 export default function Assessments({ moduleId, isStudent }) {
 
@@ -28,6 +30,8 @@ export default function Assessments({ moduleId, isStudent }) {
     const [submissionModal, setSubmissionModal] = useState(false)
     const [isSubmissionFetching, setIsSubmissionFetching] = useState(false)
     const [submissions, setSubmissions] = useState([])
+    const [showCreateModal, setShowCreateModal] = useState(false)
+    const [needRefetch, setNeedRefetch] = useState(false)
 
     useEffect(() => {
         console.log("fetching assessments")
@@ -71,16 +75,18 @@ export default function Assessments({ moduleId, isStudent }) {
 
     const handleSubmissionsClick = async (assessment_id) => {
         console.log(assessment_id)
-        setSubmissionModal(true)
         setIsSubmissionFetching(true)
         try {
             const data = await getSubmissions(assessment_id);
             console.log("Submissions:", data);
             setSubmissions(data)
+            setSubmissionModal(true)
             setIsSubmissionFetching(false)
         } catch (error) {
             console.error("Error fetching or combining data:", error);
             setIsSubmissionFetching(false);
+            setSubmissions([])
+            setSubmissionModal(true)
         }
     }
 
@@ -122,6 +128,21 @@ export default function Assessments({ moduleId, isStudent }) {
 
     return (
         <>
+            <div className='text-end'>
+                <ButtonBase
+                    onClick={() => setShowCreateModal(true)}
+                    className='p-3 rounded'
+                    sx={{
+                        textDecoration: 'none',
+                        bgcolor: '#98fb98',
+                        '&:hover': {
+                            bgcolor: '#5EFB5E'
+                        }
+                    }}>
+                    Create
+                    <AddIcon className='ms-1' />
+                </ButtonBase>
+            </div>
             {loadingAssessments && <CircularProgress />}
             {!isStudent && !loadingAssessments && (
                 <>
@@ -247,7 +268,9 @@ export default function Assessments({ moduleId, isStudent }) {
                     style={{ width: "40vw" }}>
                     <DialogTitle>Submissions</DialogTitle>
                     <DialogContent>
-                        {submissions.map((submission, index) => (
+                        {submissions.length === 0 ? (
+                            <Typography variant="body1">There are no submissions yet.</Typography>
+                        ) : (submissions.map((submission, index) => (
                             <Card key={index} className="my-5" orientation="horizontal" variant="outlined" style={{ width: "100%" }}>
                                 <FolderSharedIcon />
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
@@ -263,12 +286,61 @@ export default function Assessments({ moduleId, isStudent }) {
                                     </div>
                                 </div>
                             </Card>
-                        ))}
+                        )))}
                     </DialogContent>
                     <DialogActions>
                         <div className='pt-5'>
                             <Button
                                 onClick={() => setSubmissionModal(false)}
+                                type="submit"
+                                variant="contained"
+                                className="mx-3"
+                                sx={{
+                                    color: "black",
+                                    bgcolor: "#cac1ff",
+                                    '&:hover': {
+                                        bgcolor: '#98fb98',
+                                        color: 'black'
+                                    }
+                                }}>back</Button>
+                        </div>
+                    </DialogActions>
+                </div>
+            </Dialog>
+            <Dialog
+                open={showCreateModal}
+                onClose={() => setShowCreateModal(false)}>
+                <div
+                    className="p-5"
+                    style={{ width: "40vw" }}>
+                    <DialogTitle>Create Assessment</DialogTitle>
+                    <DialogContent>
+                        <CreateAssessmentDialog
+                            open={showCreateModal}
+                            onClose={() => setShowCreateModal(false)}
+                            needRefetch={needRefetch}
+                            setNeedRefetch={setNeedRefetch}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <div className='pt-5'>
+                            <Button
+                                onClick={() => setShowCreateModal(false)}
+                                type="submit"
+                                variant="contained"
+                                className="mx-3"
+                                sx={{
+                                    color: "black",
+                                    bgcolor: "#98fb98",
+                                    '&:hover': {
+                                        bgcolor: '#32cd32',
+                                        color: 'black'
+                                    }
+                                }}>Create</Button>
+                        </div>
+                        <div className='pt-5'>
+                            <Button
+                                onClick={() => setShowCreateModal(false)}
                                 type="submit"
                                 variant="contained"
                                 className="mx-3"
