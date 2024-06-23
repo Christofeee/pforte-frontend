@@ -320,6 +320,7 @@ export default function Assessments({ moduleId, isStudent }) {
                             onClose={() => setShowCreateModal(false)}
                             needRefetch={needRefetch}
                             setNeedRefetch={setNeedRefetch}
+                            moduleId={moduleId}
                         />
                     </DialogContent>
                     <DialogActions>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -10,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import AllFileDropzone from '../../components/allFileDropZone';
 
-const CreateAssessmentDialog = ({ open, onClose }) => {
+const CreateAssessmentDialog = ({ open, onClose, moduleId }) => {
     const [title, setTitle] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [instruction, setInstruction] = useState('');
@@ -49,7 +50,8 @@ const CreateAssessmentDialog = ({ open, onClose }) => {
         formData.append('due_date_time', dueDate);
         formData.append('instruction', instruction);
         formData.append('marks', marks);
-        formData.append('links', links.join(',')); // Combine links into a single string
+        formData.append('module_id', moduleId);
+        formData.append('link', links.join(',')); // Combine links into a single string
         files.forEach((file, index) => {
             formData.append(`files[${index}]`, file);
         });
@@ -60,17 +62,13 @@ const CreateAssessmentDialog = ({ open, onClose }) => {
         }
 
         try {
-            const response = await fetch('/api/assessment', {
-                method: 'POST',
-                body: formData,
+            const response = await axios.post('http://localhost:8000/api/assessment', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to create assessment');
-            }
-
-            const createdAssessment = await response.json();
-            console.log('Assessment created:', createdAssessment);
+            console.log('Assessment created:', response.data);
             onClose();
             // setNeedRefetch(true); // Uncomment this if you handle refetching outside this component
         } catch (error) {
