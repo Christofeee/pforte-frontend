@@ -51,7 +51,7 @@ export default function Assessments({ moduleId, isStudent }) {
             }
         };
         fetchAssessments();
-    }, []);
+    }, [needRefetch]);
 
     console.log(assessments)
 
@@ -129,10 +129,30 @@ export default function Assessments({ moduleId, isStudent }) {
         }
     };
 
-    const handleDeleteAssessment = async (assessmentId) => {
-        // setShowDeleteAssessmentModal(true)
-        // console.log("assessment Id: ", assessmentId, " is going to be deleted")
+    const handleDeleteAssessment = (assessmentId) => {
         setDeleteModalForAssessment(assessmentId);
+    }
+
+    const deleteAssessment = async (assessmentId) => {
+        console.log(assessmentId)
+        try {
+            const url = `http://localhost:8000/api/assessment/${assessmentId}`;
+
+            const headers = {
+                'Content-Type': 'application/json',
+                // Add any other headers as needed (e.g., Authorization header)
+            };
+
+            const response = await axios.delete(url, { headers });
+
+            console.log(response);
+
+            setDeleteModalForAssessment(null);
+            setNeedRefetch(prevState => !prevState);
+        } catch (error) {
+            console.error("Error deleting assessment:", error);
+            // Handle errors appropriately (e.g., show error message to the user)
+        }
     }
 
     return (
@@ -199,7 +219,7 @@ export default function Assessments({ moduleId, isStudent }) {
                                         <DialogActions>
                                             <div className='pt-5'>
                                                 <Button
-                                                    // onClick={() => setShowDeleteAssessmentModal(false)}
+                                                    onClick={() => deleteAssessment(assessment.id)}
                                                     onClose={() => setDeleteModalForAssessment(null)}
                                                     type="submit"
                                                     variant="contained"
@@ -215,7 +235,7 @@ export default function Assessments({ moduleId, isStudent }) {
                                             </div>
                                             <div className='pt-5'>
                                                 <Button
-                                                    // onClick={() => setShowDeleteAssessmentModal(false)}
+                                                    onClick={() => setDeleteModalForAssessment(null)}
                                                     onClose={() => setDeleteModalForAssessment(null)}
                                                     type="submit"
                                                     variant="contained"
@@ -238,10 +258,11 @@ export default function Assessments({ moduleId, isStudent }) {
                                     {assessment.instruction.replace(/^ */, (match) => match.replace(/\s/g, '&nbsp;'))}
                                 </Typography>
                             </div>
-
-                            <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
-                                File(s)
-                            </Typography>
+                            {assessment.files > 0 && (
+                                <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
+                                    File(s)
+                                </Typography>
+                            )}
                             <Grid container spacing={3}>
                                 {assessment.files.map((file, index) => (
                                     <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
@@ -263,11 +284,13 @@ export default function Assessments({ moduleId, isStudent }) {
                                     </Grid>
                                 ))}
                             </Grid>
-                            <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
-                                Link(s)
-                            </Typography>
+                            {assessment.link && (
+                                <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
+                                    Link(s)
+                                </Typography>
+                            )}
                             <Grid container spacing={3}>
-                                {assessment.link.split(",").map((link, index) => (
+                                {assessment.link && assessment.link.split(",").map((link, index) => (
                                     <Grid item xs={12} sm={7} md={5} lg={3} key={index}>
                                         <Card
                                             className="mx-5"
@@ -290,7 +313,7 @@ export default function Assessments({ moduleId, isStudent }) {
                                     </Grid>
                                 ))}
                             </Grid>
-                            <Grid container className="p-5 my-3">
+                            <Grid container className="p-5 my-5">
                                 <Grid item xs={8} sm={8} md={8} lg={8}>
                                     <Button
                                         onClick={() => handleSubmissionsClick(assessment.id)}

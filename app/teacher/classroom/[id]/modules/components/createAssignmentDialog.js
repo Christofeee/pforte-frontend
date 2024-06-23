@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import AllFileDropzone from '../../components/allFileDropZone';
 
-const CreateAssessmentDialog = ({ open, onClose, moduleId }) => {
+const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch }) => {
     const [title, setTitle] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [instruction, setInstruction] = useState('');
@@ -69,6 +69,7 @@ const CreateAssessmentDialog = ({ open, onClose, moduleId }) => {
             });
 
             console.log('Assessment created:', response.data);
+            setNeedRefetch(prevState => !prevState);
             onClose();
             // setNeedRefetch(true); // Uncomment this if you handle refetching outside this component
         } catch (error) {
