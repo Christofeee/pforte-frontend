@@ -18,6 +18,7 @@ import { Button, Typography, CircularProgress, Grid } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import getAssessmentsByModuleId from "../utils/getAssessmentsByModuleId";
 import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import getSubmissions from "../utils/getSubmissions";
 import CreateAssessmentDialog from "./createAssignmentDialog";
@@ -32,6 +33,8 @@ export default function Assessments({ moduleId, isStudent }) {
     const [submissions, setSubmissions] = useState([])
     const [showCreateModal, setShowCreateModal] = useState(false)
     const [needRefetch, setNeedRefetch] = useState(false)
+    const [showDeleteAssessmentModal, setShowDeleteAssessmentModal] = useState(false)
+    const [deleteModalForAssessment, setDeleteModalForAssessment] = useState(null);
 
     useEffect(() => {
         console.log("fetching assessments")
@@ -126,6 +129,12 @@ export default function Assessments({ moduleId, isStudent }) {
         }
     };
 
+    const handleDeleteAssessment = async (assessmentId) => {
+        // setShowDeleteAssessmentModal(true)
+        // console.log("assessment Id: ", assessmentId, " is going to be deleted")
+        setDeleteModalForAssessment(assessmentId);
+    }
+
     return (
         <>
             <div className='text-end'>
@@ -160,17 +169,69 @@ export default function Assessments({ moduleId, isStudent }) {
                                 </Typography>
                                 <Button
                                     style={editStyle}
-                                    // onClick={handleEditClick}
+                                    onClick={() => handleDeleteAssessment(assessment.id)}
                                     className='py-1 rounded'
                                     sx={{
-                                        bgcolor: '#98fb98',
+                                        textTransform: 'none',
+                                        fontSize: '0.8rem',
+                                        marginBottom: '8px',
+                                        bgcolor: '#ffcccc',
                                         color: 'black',
                                         '&:hover': {
-                                            bgcolor: '#5EFB5E'
+                                            bgcolor: '#ff9999',
                                         }
                                     }}>
-                                    <EditIcon />
+                                    <DeleteOutlineIcon />
                                 </Button>
+                                <Dialog
+                                    // open={showDeleteAssessmentModal}
+                                    // onClose={() => setShowDeleteAssessmentModal(false)}
+                                    open={deleteModalForAssessment === assessment.id} // Check if this assessment's modal should be open
+                                    onClose={() => setDeleteModalForAssessment(null)}
+                                >
+                                    <div
+                                        className="p-5"
+                                        style={{ width: "40vw" }}>
+                                        <DialogTitle style={{ color: 'red' }}>Delete Assessment</DialogTitle>
+                                        <DialogContent>
+                                            Are you sure you want to delete the Assessment: <span style={{ fontSize: 'large' }}>{assessment.title}</span>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <div className='pt-5'>
+                                                <Button
+                                                    // onClick={() => setShowDeleteAssessmentModal(false)}
+                                                    onClose={() => setDeleteModalForAssessment(null)}
+                                                    type="submit"
+                                                    variant="contained"
+                                                    className="mx-3"
+                                                    sx={{
+                                                        color: "black",
+                                                        bgcolor: "#98fb98",
+                                                        '&:hover': {
+                                                            bgcolor: '#32cd32',
+                                                            color: 'black'
+                                                        }
+                                                    }}>Confirm</Button>
+                                            </div>
+                                            <div className='pt-5'>
+                                                <Button
+                                                    // onClick={() => setShowDeleteAssessmentModal(false)}
+                                                    onClose={() => setDeleteModalForAssessment(null)}
+                                                    type="submit"
+                                                    variant="contained"
+                                                    className="mx-3"
+                                                    sx={{
+                                                        color: "black",
+                                                        bgcolor: "#cac1ff",
+                                                        '&:hover': {
+                                                            bgcolor: '#98fb98',
+                                                            color: 'black'
+                                                        }
+                                                    }}>Cancel</Button>
+                                            </div>
+                                        </DialogActions>
+                                    </div>
+                                </Dialog>
                             </div>
                             <div className="p-3">
                                 <Typography variant="body" style={{ descriptionStyle, whiteSpace: 'pre-wrap' }}>
