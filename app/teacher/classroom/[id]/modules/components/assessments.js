@@ -1,10 +1,9 @@
 "use client"
 
+import axios from "axios";
 import React, { useEffect, useState } from "react";
-import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
-import CardOverflow from '@mui/joy/CardOverflow';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import LinkIcon from '@mui/icons-material/Link';
 import Switch from '@mui/material/Switch';
@@ -15,19 +14,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import DownloadIcon from '@mui/icons-material/Download';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
-// import FileDropZone from "../../components/fileDropZone";
-// import uploadPdf from "../utils/uploadPdf";
-// import getPdfsById from "../utils/getPdfsById";
-// import DocViewer, { PDFRenderer } from "@cyntler/react-doc-viewer";
-// import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import { Button, BackButton, Grid, Modal, Box, Typography, CircularProgress, ButtonBase, CardActions, Checkbox } from "@mui/material";
-// import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-// import UploadFileIcon from '@mui/icons-material/UploadFile';
-// import "react-pdf/dist/esm/Page/TextLayer.css";
-// import 'react-pdf/dist/Page/AnnotationLayer.css';
+import { Button, Typography, CircularProgress, Grid } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import getAssessmentsByModuleId from "../utils/getAssessmentsByModuleId";
-import Link from "next/link";
 
 import getSubmissions from "../utils/getSubmissions";
 
@@ -94,6 +83,42 @@ export default function Assessments({ moduleId, isStudent }) {
             setIsSubmissionFetching(false);
         }
     }
+
+    const handleFileDownload = async (student_id, assessment_id) => {
+        try {
+            const downloadUrl = 'http://localhost:8000/api/submissions/download'; // Adjust URL as per your API endpoint
+
+            // Make a POST request to download the file
+            const response = await axios.post(downloadUrl, {
+                student_id: student_id,
+                assessment_id: assessment_id
+            }, {
+                responseType: 'blob' // important for downloading blobs (files)
+            });
+
+            // Create a temporary URL for the blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            // Create an anchor element
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `files_${assessment_id}_${student_id}.zip`; // Adjust filename as needed
+
+            // Append the anchor to the body and click it to trigger the download
+            document.body.appendChild(a);
+            a.click();
+
+            // Remove the anchor from the body
+            document.body.removeChild(a);
+
+            // Clean up the temporary URL
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading file:", error);
+            // Handle error as needed
+        }
+    };
 
     return (
         <>
@@ -234,7 +259,7 @@ export default function Assessments({ moduleId, isStudent }) {
                                         </Tooltip>
                                     </CardContent>
                                     <div style={{ marginLeft: 'auto', cursor: 'pointer' }} onClick={() => handleSubmissionsClick(submission.assessment_id)}>
-                                        <DownloadIcon />
+                                        <DownloadIcon onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)} />
                                     </div>
                                 </div>
                             </Card>
