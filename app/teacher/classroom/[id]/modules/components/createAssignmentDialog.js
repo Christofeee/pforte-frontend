@@ -49,7 +49,7 @@ const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch }) => 
         formData.append('title', title);
         formData.append('due_date_time', dueDate);
         formData.append('instruction', instruction);
-        formData.append('marks', marks);
+        formData.append('mark', marks);
         formData.append('module_id', moduleId);
         formData.append('link', links.join(',')); // Combine links into a single string
         files.forEach((file, index) => {
