@@ -1,10 +1,9 @@
-"use client";
-
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Button, TextField, Select, MenuItem, FormControl, InputLabel, Tooltip, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 
 const style = {
     position: 'absolute',
@@ -12,16 +11,20 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
+    maxHeight: '80vh',
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    border: 'none', // Remove the solid border
     boxShadow: 24,
+    overflowY: 'auto',
     pt: 2,
     px: 4,
     pb: 3,
+    borderRadius: '10px', // Add this line
 };
 
 async function updateUser(userId, userData) {
     try {
+        console.log(userData)
         const response = await fetch(`/api/auth/update-user?id=${userId}`, {
             method: "PUT",
             headers: {
@@ -31,11 +34,20 @@ async function updateUser(userId, userData) {
         });
 
         const data = await response.json();
-        console.log('User updated successfully:');
+
+        if (!response.ok) {
+            if (response.status === 409) {
+                throw new Error('Username or email is already taken');
+            } else {
+                throw new Error(data.message || 'Error updating user');
+            }
+        }
+
+        console.log('User updated successfully:', data);
         return data;
     } catch (error) {
-        console.error('Error updating user:', error.response?.data || error.message);
-        return data;
+        console.error('Error updating user:', error);
+        throw error;
     }
 }
 
@@ -49,6 +61,7 @@ export default function EditUserModal({ user, onSave }) {
         password: '',
         role: '',
     });
+    const [error, setError] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -69,6 +82,7 @@ export default function EditUserModal({ user, onSave }) {
 
     const handleClose = () => {
         setOpen(false);
+        setError('');
     };
 
     const handleChange = (event) => {
@@ -81,89 +95,96 @@ export default function EditUserModal({ user, onSave }) {
             const updatedUser = await updateUser(user.id, data);
             onSave(updatedUser);
             handleClose();
-            window.location.reload();
         } catch (error) {
-            console.error('Error updating user:', error);
+            if (error.message === 'Username or email is already taken') {
+                setError('Username or email is already taken');
+            } else {
+                setError(error.message || 'An unexpected error occurred');
+            }
         }
     };
 
     return (
         <div>
-            <Button onClick={handleOpen} style={{ marginLeft: '0.5rem' }} disabled={false}>
-                Edit
-            </Button>
+            <EditIcon onClick={handleOpen} />
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="edit-modal-title"
             >
-                <Box sx={{ ...style, width: 400 }}>
+                <Box sx={style}>
                     <h2 id="edit-modal-title" className='text-center'>Edit User</h2>
-                    <form onSubmit={handleSubmit}>
-                        <TextField
-                            label="User Name"
-                            name="username"
-                            value={data.username}
-                            onChange={handleChange}
-                            required
-                            margin="normal"
-                            fullWidth
-                        />
-                        <TextField
-                            label="First Name"
-                            name="firstName"
-                            value={data.firstName}
-                            onChange={handleChange}
-                            required
-                            margin="normal"
-                            fullWidth
-                        />
-                        <TextField
-                            label="Last Name"
-                            name="lastName"
-                            value={data.lastName}
-                            onChange={handleChange}
-                            margin="normal"
-                            fullWidth
-                        />
-                        <TextField
-                            label="Email"
-                            name="email"
-                            value={data.email}
-                            onChange={handleChange}
-                            required
-                            margin="normal"
-                            fullWidth
-                            type="email"
-                        />
-                        <TextField
-                            label="Password"
-                            name="password"
-                            value={data.password}
-                            onChange={handleChange}
-                            margin="normal"
-                            fullWidth
-                            type="password"
-                        />
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel id="role-label">User Type</InputLabel>
-                            <Select
-                                labelId="role-label"
-                                id="role"
-                                name="role"
-                                value={data.role}
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    <Box sx={{ overflowY: 'auto', padding: 2, borderRadius: '10px' }}> {/* Add padding and border radius */}
+                        <form onSubmit={handleSubmit}>
+                            <TextField
+                                label="User Name"
+                                name="username"
+                                value={data.username}
                                 onChange={handleChange}
                                 required
-                            >
-                                <MenuItem value="">Select User Type</MenuItem>
-                                <MenuItem value="student">Student</MenuItem>
-                                <MenuItem value="teacher">Teacher</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <Button type="submit" variant="contained" color="primary">
-                            Update User
-                        </Button>
-                    </form>
+                                margin="normal"
+                                fullWidth
+                                disabled
+                            />
+                            <TextField
+                                label="First Name"
+                                name="firstName"
+                                value={data.firstName}
+                                onChange={handleChange}
+                                margin="normal"
+                                fullWidth
+                            />
+                            <TextField
+                                label="Last Name"
+                                name="lastName"
+                                value={data.lastName}
+                                onChange={handleChange}
+                                margin="normal"
+                                fullWidth
+                            />
+                            <TextField
+                                label="Email"
+                                name="email"
+                                value={data.email}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                                fullWidth
+                                type="email"
+                            />
+                            <TextField
+                                label="Password"
+                                name="password"
+                                value={data.password}
+                                onChange={handleChange}
+                                margin="normal"
+                                fullWidth
+                                type="password"
+                            />
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel id="role-label">User Type</InputLabel>
+                                <Select
+                                    labelId="role-label"
+                                    id="role"
+                                    name="role"
+                                    value={data.role}
+                                    onChange={handleChange}
+                                    required
+                                    disabled
+                                >
+                                    <MenuItem value="">Select User Type</MenuItem>
+                                    <MenuItem value="student">Student</MenuItem>
+                                    <MenuItem value="teacher">Teacher</MenuItem>
+                                </Select>
+                            </FormControl>
+                            <Box display="flex" justifyContent="flex-end" mt={2}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Update User
+                                </Button>
+                            </Box>
+                        </form>
+                    </Box>
                 </Box>
             </Modal>
         </div>

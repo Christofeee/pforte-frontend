@@ -5,6 +5,7 @@ import ParseJwt from "@/utils/parseJwt";
 import AuthCheck from "@/utils/authCheck";
 import ClassName from "../components/className";
 import ClassNav from "../components/classNav";
+import MarkPage from "./components/markPage";
 
 export default async function Marks({ params }) {
   const session = await getServerSession(authOptions);
@@ -21,10 +22,10 @@ export default async function Marks({ params }) {
   return (
     <AuthCheck session={session} roleToCheck="teacher">
       <main className="p-5">
-        <ClassName text='Class Name' />
+        <ClassName classId={params.id} />
         <ClassNav classId={params.id} />
         <div className="p-5">
-          Marks
+          <MarkPage userID={userID}/>
         </div>
       </main>
     </AuthCheck>

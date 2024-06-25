@@ -2,25 +2,57 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import {
+    Box,
+    Button,
+    Checkbox,
+    FormControlLabel,
+    IconButton,
+    InputAdornment,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction,
+    Modal,
+    TextField,
+    Typography
+} from '@mui/material';
+import { Search as SearchIcon } from '@mui/icons-material';
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: '90%',
+    maxWidth: '50vw',
+    minWidth: '50vw',
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    borderRadius: '8px',
     boxShadow: 24,
     pt: 2,
     px: 4,
     pb: 3,
+    maxHeight: '80vh',
+    overflowY: 'auto',
 };
+import { styled } from '@mui/system';
+
+
+const StyledButton = styled(Button)({
+    textTransform: 'none',
+    padding: '.6rem', // Adjust padding for a larger button
+    borderRadius: '8px', // Rounded corners
+    backgroundColor: 'transparent', // Transparent background
+    color: 'black', // Black text color
+    '&:hover': {
+        backgroundColor: '#ffffff', // White background on hover
+        color: '#1976d2', // Blue text color on hover
+    },
+});
 
 async function createClassUsers(selectedUserIds, id) {
+    console.log("CLASS ID HERE PR: ", id)
     try {
         const response = await fetch(`/api/auth/classes/put-members?id=${id}`, {
             method: "PUT",
@@ -39,14 +71,10 @@ async function createClassUsers(selectedUserIds, id) {
     }
 }
 
-export default function PutClassMembers({ users , classId}) {
-    const [open, setOpen] = React.useState(false);
-    const [data, setData] = useState({
-        classroom_id: null,
-        user_id: ''
-    });
-
-    //
+export default function PutClassMembers({ users, classId, usersInClass }) {
+    console.log("CLASS ID in componentmodal : ", classId)
+    console.log("USERS IN CLASS:", usersInClass)
+    const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedUsers, setSelectedUsers] = useState(new Set()); // State for selected users
     const [selectAll, setSelectAll] = useState(false); // State for select all
@@ -77,11 +105,11 @@ export default function PutClassMembers({ users , classId}) {
     };
 
     const filteredUsers = users.filter(user => {
+        const isInClass = usersInClass.some(classUser => classUser.id === user.id);
         const matchesSearchTerm = user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.lastName.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesSearchTerm;
+        return !isInClass && matchesSearchTerm;
     });
-    //
 
     const handleOpen = () => {
         setOpen(true);
@@ -91,18 +119,11 @@ export default function PutClassMembers({ users , classId}) {
         setOpen(false);
     };
 
-    const handleChange = (event) => {
-        setData({ ...data, [event.target.name]: event.target.value });
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         const selectedUserIds = Array.from(selectedUsers);
-        // console.log(data)
-        // setFormData(data);
         try {
             await createClassUsers(selectedUserIds, classId);
-            // Optional: Add success message or close the modal
             handleClose();
             window.location.reload();
         } catch (error) {
@@ -112,54 +133,65 @@ export default function PutClassMembers({ users , classId}) {
 
     return (
         <div>
-            <Button className='p-3 shadow' onClick={handleOpen} style={{ textTransform: 'none' }} variant='h4'>Add New Members</Button>
+            <StyledButton onClick={handleOpen} variant="contained">Add new Members</StyledButton>
             <Modal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="parent-modal-title"
             >
-                <Box sx={{ ...style, width: 400 }}>
-                    <h2 id="parent-modal-title" className='text-center'>Add New Members</h2>
-                    <div className="users" style={{ margin: '1rem', padding: '1rem' }}>
-                        <input
-                            type="text"
-                            className="search-bar"
+                <Box sx={style}>
+                    <Typography id="parent-modal-title" variant="h6" className='text-center'>Add New Members</Typography>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
                             placeholder="Search by name"
                             value={searchTerm}
                             onChange={handleSearchChange}
-                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '3px', marginBottom: '1rem' }}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{ mb: 2 }}
                         />
-                        <div style={{ marginBottom: '1rem' }}>
-                            <input
-                                type="checkbox"
-                                checked={selectAll}
-                                onChange={handleSelectAll}
-                            />
-                            <label style={{ marginLeft: '0.5rem' }}>Select All</label>
-                            {selectedUsers.size > 0 && (
-                                <span style={{ marginLeft: '1rem' }}>{selectedUsers.size} user(s) selected</span>
-                            )}
-                        </div>
-
-                        <ul className="user-list" style={{ listStyle: 'none', padding: '0', margin: '0' }}>
+                        <FormControlLabel
+                            control={<Checkbox checked={selectAll} onChange={handleSelectAll} />}
+                            label="Select All"
+                        />
+                        {selectedUsers.size > 0 && (
+                            <Typography variant="body2" sx={{ ml: 2 }}>{selectedUsers.size} user(s) selected</Typography>
+                        )}
+                        <List>
                             {filteredUsers.map(user => (
-                                <li key={user.id} style={{ padding: '0.5rem', borderBottom: '1px solid #ddd', display: 'flex', alignItems: 'center' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedUsers.has(user.id)}
-                                        onChange={() => handleUserSelect(user.id)}
-                                        style={{ marginRight: '1rem' }}
+                                <ListItem key={user.id} sx={{ borderBottom: '1px solid #ddd' }}>
+                                    <ListItemText
+                                        primary={`${user.firstName} ${user.lastName} (${user.role})`}
+                                        secondary={user.email}
                                     />
-                                    <span>
-                                        {user.firstName} {user.lastName} ({user.role}) - {user.email}
-                                    </span>
-                                </li>
+                                    <ListItemSecondaryAction>
+                                        <Checkbox
+                                            edge="end"
+                                            checked={selectedUsers.has(user.id)}
+                                            onChange={() => handleUserSelect(user.id)}
+                                        />
+                                    </ListItemSecondaryAction>
+                                </ListItem>
                             ))}
-                        </ul>
-                        <button onClick={handleSubmit} disabled={selectedUsers.size === 0} style={{ marginBottom: '1rem' }}>
+                        </List>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            sx={{ mt: 3, mb: 2 }}
+                            disabled={selectedUsers.size === 0}
+                        >
                             Add
-                        </button>
-                    </div>
+                        </Button>
+                    </Box>
                 </Box>
             </Modal>
         </div>

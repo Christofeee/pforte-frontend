@@ -1,8 +1,11 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
-import { Button, Card, CardContent, CardActions, Grid, Typography, Box, CircularProgress, Backdrop } from '@mui/material';
+import {
+    Button, Card, CardContent, CardActions, Grid, Typography, Box, CircularProgress, Backdrop, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Select, MenuItem, Checkbox, FormControl, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormControlLabel, FormGroup, IconButton, Tooltip
+} from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import getClasses from './getClasses';
 import getUsers from '../../accounts/components/getUsers';
@@ -10,9 +13,25 @@ import getClassUsers from './getClassUsers';
 import deleteClass from './deleteClass';
 import deleteClassUser from './deleteClassUser';
 
+import AdminHomeButton from '../../components/AdminHomeButton';
 import CreateClassModal from './createClassModal';
 import EditClassModal from './editClassModal';
 import PutClassMembers from './putClassMembers';
+import { styled } from '@mui/system';
+import { InputLabel } from '@mui/material';
+
+const StyledButton = styled(Button)({
+    textTransform: 'none',
+    padding: '.6rem', // Adjust padding for a larger button
+    borderRadius: '8px', // Rounded corners
+    backgroundColor: 'transparent', // Transparent background
+    color: 'black', // Black text color
+    boxShadow: 24,
+    '&:hover': {
+        backgroundColor: '#ffffff', // White background on hover
+        color: '#1976d2', // Blue text color on hover
+    },
+});
 
 export default function ManageClassrooms() {
     const [classes, setClasses] = useState([]);
@@ -23,6 +42,14 @@ export default function ManageClassrooms() {
     const [selectedClassUsers, setSelectedClassUsers] = useState([]);
     const [deleting, setDeleting] = useState(false);
     const [loading, setLoading] = useState(true); // Initialize loading state as true
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteClassUserDialogOpen, setDeleteClassUserDialogOpen] = useState(false);
+    const [classToDelete, setClassToDelete] = useState(null);
+    const [classUserToDelete, setClassUserToDelete] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedUsers, setSelectedUsers] = useState(new Set());
+    const [selectAll, setSelectAll] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,11 +109,12 @@ export default function ManageClassrooms() {
         setClasses(classes.map(c => c.classroom_id === classId ? updatedClass : c));
     };
 
-    const handleClassDelete = async (classId) => {
+    const handleClassDelete = async () => {
         try {
             setDeleting(true);
-            await deleteClass(classId);
-            setClasses(classes.filter(c => c.classroom_id !== classId));
+            await deleteClass(classToDelete.classroom_id);
+            setClasses(classes.filter(c => c.classroom_id !== classToDelete.classroom_id));
+            setDeleteDialogOpen(false);
         } catch (error) {
             console.error('Error deleting class:', error);
         } finally {
@@ -94,18 +122,61 @@ export default function ManageClassrooms() {
         }
     };
 
-    const handleClassUserDelete = async (classUserId) => {
+    const handleClassUserDelete = async () => {
         try {
             setDeleting(true);
-            await deleteClassUser(classUserId);
-            setSelectedClassUsers(selectedClassUsers.filter(user => user.classroom_user_id !== classUserId));
-            setClassUsers(classUsers.filter(cu => cu.classroom_user_id !== classUserId));
+            await deleteClassUser(classUserToDelete.classroom_user_id);
+            setSelectedClassUsers(selectedClassUsers.filter(user => user.classroom_user_id !== classUserToDelete.classroom_user_id));
+            setClassUsers(classUsers.filter(cu => cu.classroom_user_id !== classUserToDelete.classroom_user_id));
+            setDeleteClassUserDialogOpen(false);
         } catch (error) {
             console.error('Error deleting class user:', error);
         } finally {
             setDeleting(false);
         }
     };
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const handleRoleChange = (event) => {
+        setSelectedRole(event.target.value);
+    };
+
+    const handleUserSelect = (userId) => {
+        setSelectedUsers(prevSelectedUsers => {
+            const newSelectedUsers = new Set(prevSelectedUsers);
+            if (newSelectedUsers.has(userId)) {
+                newSelectedUsers.delete(userId);
+            } else {
+                newSelectedUsers.add(userId);
+            }
+            return newSelectedUsers;
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelectedUsers(new Set());
+        } else {
+            setSelectedUsers(new Set(filteredUsers.map(user => user.classroom_user_id)));
+        }
+        setSelectAll(!selectAll);
+    };
+
+    const filteredClasses = classes.filter(classItem => {
+        const matchesSearchTerm = classItem.name.toLowerCase().includes(searchTerm.toLowerCase()) || classItem.description.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearchTerm;
+    });
+
+    const filteredUsers = selectedClassUsers.filter(user => {
+        const firstName = user.firstName || '';
+        const lastName = user.lastName || '';
+        const matchesSearchTerm = firstName.toLowerCase().includes(searchTerm.toLowerCase()) || lastName.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesRole = selectedRole === '' || user.role === selectedRole;
+        return matchesSearchTerm && matchesRole;
+    });
 
     return (
         <Box sx={{ padding: 4 }}>
@@ -116,23 +187,35 @@ export default function ManageClassrooms() {
             )}
             {!enterClass ? (
                 <Box>
-                    <Typography variant="h4" align="center" gutterBottom>
-                        Manage Classes
-                    </Typography>
-                    <Box sx={{ textAlign: 'right', marginBottom: 3 }}>
-                        <CreateClassModal />
-                    </Box>
-                    <Grid container spacing={3}>
-                        {classes.map((classItem) => (
+                    <div className='flex items-center justify-between pb-5'>
+                        <AdminHomeButton path='/admin' />
+                        <Typography variant="h6" sx={{ flex: 1, textAlign: 'center' }}>Manage Classes</Typography>
+                    </div>
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                label="Search Classes"
+                                variant="outlined"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <CreateClassModal fullWidth />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3} sx={{ marginTop: 2 }}>
+                        {filteredClasses.map((classItem) => (
                             <Grid item xs={12} sm={6} md={6} key={classItem.classroom_id}>
-                                <Card>
+                                <Card elevation={3} className='p-3'>
                                     <CardContent onClick={() => handleEnterClass(classItem)}>
                                         <Grid container alignItems="center" justifyContent="space-between">
-                                            <Grid item>
-                                                    <Typography variant="h6">{classItem.name}</Typography>
-                                                    <Typography variant="body2" color="textSecondary">
-                                                        {classItem.description}
-                                                    </Typography>
+                                            <Grid item className='py-5'>
+                                                <Typography variant="h6">{classItem.name}</Typography>
+                                                <Typography variant="body2" color="textSecondary">
+                                                    {classItem.description}
+                                                </Typography>
                                             </Grid>
                                             <Grid item>
                                                 <Button size="small" startIcon={<ArrowForwardIosIcon />} />
@@ -140,15 +223,17 @@ export default function ManageClassrooms() {
                                         </Grid>
                                     </CardContent>
                                     <CardActions>
-                                        <Button
-                                            size="small"
-                                            onClick={() => handleClassDelete(classItem.classroom_id)}
-                                            color="secondary"
+                                        <StyledButton
+                                            onClick={() => {
+                                                setClassToDelete(classItem);
+                                                setDeleteDialogOpen(true);
+                                            }}
                                             disabled={deleting}
+                                            variant='contained'
                                         >
-                                            {deleting ? 'Deleting...' : 'Delete'}
-                                        </Button>
-                                        <EditClassModal classItem={classItem} onSave={(updatedClass) => handleClassEdit(classItem.classroom_id, updatedClass)} />
+                                            <DeleteIcon />
+                                        </StyledButton>
+                                        <EditClassModal classItem={classItem} onClassEdit={handleClassEdit} />
                                     </CardActions>
                                 </Card>
                             </Grid>
@@ -157,80 +242,121 @@ export default function ManageClassrooms() {
                 </Box>
             ) : (
                 <Box>
-                    <Button onClick={handleShowClasses} startIcon={<ArrowBackIosIcon />}>
-                        Back to Classes
-                    </Button>
-                    <Typography variant="h5" align="center" gutterBottom>
-                        Manage Users In {selectedClass.name}
-                    </Typography>
-                    <Box sx={{ textAlign: 'right', marginBottom: 3 }}>
-                        <PutClassMembers users={users} classId={selectedClass.classroom_id} />
-                    </Box>
-                    <Grid container spacing={3}>
-                        {selectedClassUsers.map(user => (
-                            <Grid item xs={12} sm={6} md={4} key={user.classroom_user_id}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography variant="h6">{user.firstName} {user.lastName}</Typography>
-                                        <Typography variant="body2" color="textSecondary">
-                                            {user.role}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions>
-                                        <Button
-                                            size="small"
-                                            onClick={() => handleClassUserDelete(user.classroom_user_id)}
-                                            color="secondary"
-                                            disabled={deleting}
-                                        >
-                                            {deleting ? 'Deleting...' : 'Delete'}
-                                        </Button>
-                                    </CardActions>
-                                </Card>
-                            </Grid>
-                        ))}
+                    <div className='flex items-center justify-between pb-5'>
+                        <IconButton onClick={handleShowClasses}>
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                        <Typography variant="h6" sx={{ flex: 1, textAlign: 'center' }}>{selectedClass.name}</Typography>
+                    </div>
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                label="Search Users"
+                                variant="outlined"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <FormControl fullWidth variant="outlined">
+                                <InputLabel id="role-label">Role</InputLabel>
+                                <Select
+                                    label="Filter by role"
+                                    value={selectedRole}
+                                    onChange={handleRoleChange}
+                                >
+                                    <MenuItem value="">All Roles</MenuItem>
+                                    <MenuItem value="student">Student</MenuItem>
+                                    <MenuItem value="teacher">Teacher</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <PutClassMembers users={users} classId={selectedClass.classroom_id} usersInClass={selectedClassUsers} />
+                        </Grid>
                     </Grid>
+                    <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                        <Table>
+                            <TableHead
+                                sx={{
+                                    boxShadow: 3
+                                }}
+                            >
+                                <TableRow>
+                                    <TableCell><b>Name</b></TableCell>
+                                    <TableCell><b>Role</b></TableCell>
+                                    <TableCell><b>Email</b></TableCell>
+                                    <TableCell align="right"><b>Action</b></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {filteredUsers.map((user) => (
+                                    <TableRow key={user.classroom_user_id}>
+                                        <TableCell>{user.firstName} {user.lastName}</TableCell>
+                                        <TableCell>{user.role}</TableCell>
+                                        <TableCell>{user.email}</TableCell>
+                                        <TableCell align="right">
+                                            <Tooltip title="Remove from class">
+                                                <IconButton
+                                                    onClick={() => {
+                                                        setClassUserToDelete(user);
+                                                        setDeleteClassUserDialogOpen(true);
+                                                    }}
+                                                    disabled={deleting}
+                                                    size='large'
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Box>
             )}
+
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Delete Class</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete this class? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleClassDelete} color="primary" autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={deleteClassUserDialogOpen}
+                onClose={() => setDeleteClassUserDialogOpen(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Remove User from Class</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to remove this user from the class? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteClassUserDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleClassUserDelete} color="primary" autoFocus>
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
-
-
-
-
-
-{/* <div>
-    <Typography variant="h5">Classes-Users</Typography>
-    <ul>
-        {classUsers.map((classUser, index) => (
-            <li key={classUser.classroom_user_id} className='m-3 p-5 text-white-100 shadow'>
-                <p>{classUser.classroom_id} -- {classUser.user_id}</p>
-            </li>
-        ))}
-    </ul>
-</div> */}
-
-{/* <div>
-    <Typography variant="h5">Users</Typography>
-    <ul>
-        {users.map((user, index) => (
-            <li key={user.id} className='m-3 p-5 text-white-100 shadow'>
-                <p>{user.firstName} {user.lastName} {user.role}</p>
-            </li>
-        ))}
-    </ul>
-</div> */}
-
-// import Typography from '@mui/material/Typography';
-// import Classes from './classes';
-
-// export default function ManageClassrooms() {
-
-//     return (
-//         <main className="p-5">
-//             <Typography className="text-center p-5" variant="h4">Classes</Typography>
-//             <Classes />
-//         </main >
-//     );
-// }

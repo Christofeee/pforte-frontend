@@ -11,7 +11,8 @@ export async function PUT(req, res) {
         };
 
         const url = `http://localhost:8000/api/classroom-users`;
-
+        console.log("CLASS ID: ", classId)
+        console.log("UserIds: ", userIds)
         const promises = userIds.map(userId => {
             const data = {
                 classroom_id: classId,

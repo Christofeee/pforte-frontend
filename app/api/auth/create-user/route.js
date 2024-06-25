@@ -5,10 +5,11 @@ import { NextResponse } from 'next/server'
 // import { getFormData } from '@/app/admin/accounts/components/formDataStore';
 
 export async function POST(req, res) {
+    let responseData
     try {
         const accessToken = await getAccessToken();
         const formData = await req.json();
-        // console.log("FORM DATA: ", formData);
+        console.log("FORM DATA: ", formData);
         const { username, email, firstName, lastName, password, role } = formData;
         // console.log("username: ", username);
         
@@ -37,10 +38,11 @@ export async function POST(req, res) {
         };
 
         const response = await axios.post(url, data, { headers });
-        console.log('User created successfully:', response.data);
-        return NextResponse.json({ data: response.data }, { status: 200 });
+        responseData = response.data || {}; // Handle empty response
+        console.log('User created successfully:', responseData);
+        return NextResponse.json({ data: responseData }, { status: 200 });
     } catch (error) {
         console.error('Error creating user:', error);
-        return NextResponse.json({ data: response.data }, { status: 500 });
+        return NextResponse.json({ data: responseData }, { status: 500 });
     }
 }
