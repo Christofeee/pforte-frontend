@@ -108,6 +108,7 @@ const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch }) => 
                                 fullWidth
                                 label="Marks"
                                 value={marks}
+                                type="number"
                                 onChange={(e) => setMarks(e.target.value)}
                                 required
                             />

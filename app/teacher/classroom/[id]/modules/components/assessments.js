@@ -4,6 +4,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
+import TextField from '@mui/material/TextField';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import LinkIcon from '@mui/icons-material/Link';
 import Switch from '@mui/material/Switch';
@@ -22,11 +23,15 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import getSubmissions from "../utils/getSubmissions";
 import CreateAssessmentDialog from "./createAssignmentDialog";
+import getMarksByAssessmentAndStudentIds from "../utils/getMarksByAssessmentAndStudentIds";
 
-export default function Assessments({ moduleId, isStudent }) {
+export default function Assessments({ moduleId, classId, isStudent }) {
 
     const [loadingAssessments, setLoadingAssessments] = useState(false);
     const [assessments, setAssessments] = useState([])
+    const [marks, setMarks] = useState([]);
+    const [formMarks, setFormMarks] = useState({});
+    const [studentIds, setStudentIds] = useState([])
 
     const [submissionModal, setSubmissionModal] = useState(false)
     const [isSubmissionFetching, setIsSubmissionFetching] = useState(false)
@@ -35,6 +40,7 @@ export default function Assessments({ moduleId, isStudent }) {
     const [needRefetch, setNeedRefetch] = useState(false)
     const [showDeleteAssessmentModal, setShowDeleteAssessmentModal] = useState(false)
     const [deleteModalForAssessment, setDeleteModalForAssessment] = useState(null);
+    const [isSubmissionPage, setIsSubmissionPage] = useState(true)
 
     useEffect(() => {
         console.log("fetching assessments")
@@ -52,6 +58,16 @@ export default function Assessments({ moduleId, isStudent }) {
         };
         fetchAssessments();
     }, [needRefetch]);
+
+    useEffect(() => {
+        const initialFormMarks = {};
+        submissions.forEach(submission => {
+            const mark = marks.find(mark => mark.student_id === submission.student_id);
+            initialFormMarks[submission.student_id] = mark ? mark.mark : '';
+        });
+        setFormMarks(initialFormMarks);
+    }, [submissions, marks]);
+
 
     console.log(assessments)
 
@@ -83,7 +99,16 @@ export default function Assessments({ moduleId, isStudent }) {
             const data = await getSubmissions(assessment_id);
             console.log("Submissions:", data);
             setSubmissions(data)
+            const studentIds = data.map(submission => submission.student_id);
+            setStudentIds(studentIds)
+
+            const markData = await getMarksByAssessmentAndStudentIds(assessment_id, studentIds)
+
+            console.log("MARK DATA:", markData)
+
+            setMarks(markData)
             setSubmissionModal(true)
+            setIsSubmissionPage(true)
             setIsSubmissionFetching(false)
         } catch (error) {
             console.error("Error fetching or combining data:", error);
@@ -154,6 +179,28 @@ export default function Assessments({ moduleId, isStudent }) {
             // Handle errors appropriately (e.g., show error message to the user)
         }
     }
+
+    const handleMarksSubmit = async (e) => {
+        e.preventDefault();
+        const marksData = submissions.map(submission => ({
+            student_id: submission.student_id,
+            student_name: submission.student_name,
+            assessment_id: submission.assessment_id,
+            mark: formMarks[submission.student_id],
+            module_id: moduleId,
+            classroom_id: classId
+        }));
+
+        console.log("marksData:")
+        console.log(marksData)
+
+        try {
+            await axios.post('http://localhost:8000/api/marks/save', marksData);
+            setSubmissionModal(false);
+        } catch (error) {
+            console.error("Error submitting marks:", error);
+        }
+    };
 
     return (
         <>
@@ -350,45 +397,135 @@ export default function Assessments({ moduleId, isStudent }) {
                 <div
                     className="p-5"
                     style={{ width: "40vw" }}>
-                    <DialogTitle>Submissions</DialogTitle>
-                    <DialogContent>
-                        {submissions.length === 0 ? (
-                            <Typography variant="body1">There are no submissions yet.</Typography>
-                        ) : (submissions.map((submission, index) => (
-                            <Card key={index} className="my-5" orientation="horizontal" variant="outlined" style={{ width: "100%" }}>
-                                <FolderSharedIcon />
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                    <CardContent style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        <Tooltip title={`By ${submission.student_name}`}>
-                                            <Typography fontWeight="md" textColor="success.plainColor">
-                                                By {submission.student_name}
-                                            </Typography>
-                                        </Tooltip>
-                                    </CardContent>
-                                    <div style={{ marginLeft: 'auto', cursor: 'pointer' }} onClick={() => handleSubmissionsClick(submission.assessment_id)}>
-                                        <DownloadIcon onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)} />
+                    <div className="flex">
+                        <Button
+                            onClick={() => setIsSubmissionPage(true)}
+                            className="mr-3"
+                            sx={{
+                                textTransform: 'none',
+                                color: isSubmissionPage === true ? 'white' : 'black',
+                                bgcolor: isSubmissionPage === true ? '#6a5bcd' : 'white',
+                                '&:hover': {
+                                    bgcolor: '#6a5bcd',
+                                    color: 'white'
+                                }
+                            }}
+                        >Submissions</Button>
+                        <Button
+                            onClick={() => setIsSubmissionPage(false)}
+                            className="mr-3"
+                            sx={{
+                                textTransform: 'none',
+                                color: isSubmissionPage === false ? 'white' : 'black',
+                                bgcolor: isSubmissionPage === false ? '#6a5bcd' : 'white',
+                                '&:hover': {
+                                    bgcolor: '#6a5bcd',
+                                    color: 'white'
+                                }
+                            }}
+                        >Marks</Button>
+                    </div>
+                    {isSubmissionPage && (
+                        <DialogContent>
+                            {submissions.length === 0 ? (
+                                <Typography variant="body1">There are no submissions yet.</Typography>
+                            ) : (submissions.map((submission, index) => (
+                                <Card key={index} className="my-5" orientation="horizontal" variant="outlined" style={{ width: "100%" }}>
+                                    <FolderSharedIcon />
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                        <CardContent style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <Tooltip title={`By ${submission.student_name}`}>
+                                                <Typography fontWeight="md" textColor="success.plainColor">
+                                                    By {submission.student_name}
+                                                </Typography>
+                                            </Tooltip>
+                                        </CardContent>
+                                        <div style={{ marginLeft: 'auto', cursor: 'pointer' }} onClick={() => handleSubmissionsClick(submission.assessment_id)}>
+                                            <DownloadIcon onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)} />
+                                        </div>
                                     </div>
+                                </Card>
+                            )))}
+                            <DialogActions>
+                                <div className='pt-5'>
+                                    <Button
+                                        onClick={() => setSubmissionModal(false)}
+                                        type="submit"
+                                        variant="contained"
+                                        className="mx-3"
+                                        sx={{
+                                            color: "black",
+                                            bgcolor: "#cac1ff",
+                                            '&:hover': {
+                                                bgcolor: '#98fb98',
+                                                color: 'black'
+                                            }
+                                        }}>back</Button>
                                 </div>
-                            </Card>
-                        )))}
-                    </DialogContent>
-                    <DialogActions>
-                        <div className='pt-5'>
-                            <Button
-                                onClick={() => setSubmissionModal(false)}
-                                type="submit"
-                                variant="contained"
-                                className="mx-3"
-                                sx={{
-                                    color: "black",
-                                    bgcolor: "#cac1ff",
-                                    '&:hover': {
-                                        bgcolor: '#98fb98',
-                                        color: 'black'
-                                    }
-                                }}>back</Button>
-                        </div>
-                    </DialogActions>
+                            </DialogActions>
+                        </DialogContent>
+                    )}
+                    {!isSubmissionPage && (
+                        <DialogContent>
+                            {submissions.length === 0 ? (
+                                <Typography variant="body1">There are no marks availabe yet.</Typography>
+                            ) : (
+                                <form
+                                    className=""
+                                    onSubmit={handleMarksSubmit}
+                                >
+                                    {submissions.map((submission, index) => {
+                                        const mark = marks.find(mark => mark.student_id === submission.student_id);
+                                        return (
+                                            <TextField
+                                                className="block my-5"
+                                                key={index}
+                                                label={`Mark for ${submission.student_name}`}
+                                                value={formMarks[submission.student_id] ?? (mark ? mark.mark : '')}
+                                                type="number"
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setFormMarks({
+                                                        ...formMarks,
+                                                        [submission.student_id]: value === '' ? '' : Number(value)
+                                                    });
+                                                }}
+                                                required
+                                            />
+                                        )
+                                    })}
+                                    <DialogActions>
+                                        <div className="" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Button
+                                                className="shadow ml-5"
+                                                type="submit"
+                                                sx={{
+                                                    textTransform: 'none',
+                                                    '&:hover': {
+                                                        color: 'black',
+                                                        bgcolor: '#98fb98'
+                                                    }
+                                                }}>
+                                                Save
+                                            </Button>
+                                        </div>
+                                        <div className="" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Button
+                                                onClick={() => setSubmissionModal(false)}
+                                                className="shadow ml-5"
+                                                sx={{
+                                                    textTransform: 'none',
+                                                    '&:hover': {
+                                                        color: 'black',
+                                                        bgcolor: '#98fb98'
+                                                    }
+                                                }}>back</Button>
+                                        </div>
+                                    </DialogActions>
+                                </form>
+                            )}
+                        </DialogContent>
+                    )}
                 </div>
             </Dialog>
             <Dialog

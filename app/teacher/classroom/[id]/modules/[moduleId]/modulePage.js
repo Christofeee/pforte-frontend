@@ -70,6 +70,10 @@ export default function ModulePage({ classId, moduleId }) {
         }
     }, [moduleData]);
 
+    // React.useEffect(()=> {
+    //     handlePageChange('Assessments')
+    // })
+
     const pages = [
         { name: 'PDFs' },
         { name: 'Videos' },
@@ -149,7 +153,7 @@ export default function ModulePage({ classId, moduleId }) {
             case 'Videos':
                 return <>videos</>
             case 'Assessments':
-                return <ModuleAssessments moduleId={moduleId} isStudent={switchChecked} />
+                return <ModuleAssessments moduleId={moduleId} classId={classId} isStudent={switchChecked} />
             default:
                 return null;
         }
