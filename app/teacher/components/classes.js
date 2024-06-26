@@ -74,12 +74,12 @@ export default function Classes({ userID }) {
                                         <Typography fontSize='10px' className="py-1" textAlign="start" color="textSecondary">
                                             {classItem.description}
                                         </Typography>
-                                        <Typography variant="body2" textAlign="start" className='ms-3 py-1' component="div">
+                                        {/* <Typography variant="body2" textAlign="start" className='ms-3 py-1' component="div">
                                             <ul style={{ listStyleType: 'circle' }}>
                                                 <li fontSize='15px'>Start Date</li>
                                                 <li fontSize='15px'>End Date</li>
                                             </ul>
-                                        </Typography>
+                                        </Typography> */}
                                     </div>
                                     <Button
                                         size="small"

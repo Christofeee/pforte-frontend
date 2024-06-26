@@ -61,7 +61,7 @@ async function updateClass(classId, classData) {
     }
 }
 
-export default function EditClassModal({ classItem, onSave }) {
+export default function EditClassModal({ classItem, onClassEdit }) {
     const [open, setOpen] = React.useState(false);
     const [data, setData] = useState({
         name: '',
@@ -99,7 +99,7 @@ export default function EditClassModal({ classItem, onSave }) {
         try {
             const updatedClass = await updateClass(classItem.classroom_id, data);
             setLoading(false);
-            onSave(updatedClass);
+            onClassEdit(updatedClass);
             handleClose();
             window.location.reload();
         } catch (error) {

@@ -57,6 +57,7 @@ const Users = () => {
             try {
                 const data = await getUsers();
                 setUsers(data);
+                console.log(data)
             } catch (error) {
                 console.error('Error fetching users:', error);
             } finally {

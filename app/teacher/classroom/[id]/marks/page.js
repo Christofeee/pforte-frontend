@@ -25,7 +25,7 @@ export default async function Marks({ params }) {
         <ClassName classId={params.id} />
         <ClassNav classId={params.id} />
         <div className="p-5">
-          <MarkPage userID={userID}/>
+          <MarkPage userID={userID} classId={params.id}/>
         </div>
       </main>
     </AuthCheck>

@@ -18,9 +18,8 @@ export async function GET() {
         console.log('User created successfully:');
         return NextResponse.json({ data: response.data }, { status: 200 });
     } catch (error) {
-        console.error('Error creating user:', error);
+        console.error('Error fetching groups in auth/users/groups:', error);
         // throw error; // Re-throw the error to be caught by the calling function
         return NextResponse.json({ data: response.data }, { status: 500 });
-
     }
 }
