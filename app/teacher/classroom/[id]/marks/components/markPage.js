@@ -7,13 +7,18 @@ import { Box, Typography, IconButton, Collapse, Paper, Divider, Button } from '@
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { styled } from '@mui/system';
 import getAssessments from '../utils/getAssessments';
+import getStudentMarks from '../utils/getStudentMarks';
 
 const RotatingIcon = styled(ArrowForwardIos)(({ theme, open }) => ({
     transition: 'transform 0.3s ease-in-out',
     transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
 }));
 
-const ModuleItem = ({ module, assessments }) => {
+function markOperation(earnedMark, totalMark) {
+
+}
+
+const ModuleItem = ({ module, assessments, studentMarks }) => {
     const [open, setOpen] = useState(false);
 
     const handleToggle = () => {
@@ -57,13 +62,16 @@ const ModuleItem = ({ module, assessments }) => {
     );
 };
 
-const StudentItem = ({ student, modules, assessments }) => {
+const StudentItem = ({ student, modules, assessments, studentMarks }) => {
     const [open, setOpen] = useState(false);
 
+    const totalClassMark = assessments && assessments.map(item => item.mark).reduce((acc, current) => acc + current, 0);
+
+    console.log("Class total mark :", totalClassMark)
     const handleToggle = () => {
         setOpen(!open);
     };
-
+    console.log("Mark IN StudentITEM", studentMarks)
     return (
         <Box>
             <Button onClick={handleToggle} elevation={1} variant='contained'
@@ -77,8 +85,9 @@ const StudentItem = ({ student, modules, assessments }) => {
                     backgroundColor: 'white',
                     my: 1
                 }}>
-                <Box>
+                <Box className="text-start">
                     <Typography variant="h6">{student.firstName} {student.lastName}</Typography>
+                    <Typography variant="body">mark / 100</Typography>
                 </Box>
                 <IconButton>
                     <RotatingIcon open={open} />
@@ -87,7 +96,12 @@ const StudentItem = ({ student, modules, assessments }) => {
             <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ pl: 2, pr: 2, pb: 2 }}>
                     {modules.map(module => (
-                        <ModuleItem key={module.id} module={module} assessments={assessments} />
+                        <ModuleItem
+                            key={module.id}
+                            module={module}
+                            assessments={assessments}
+                            studentMarks={studentMarks}
+                        />
                     ))}
                 </Box>
             </Collapse>
@@ -99,6 +113,7 @@ const MarkPage = ({ userId, classId }) => {
     const [students, setStudents] = useState([]);
     const [modules, setModules] = useState([]);
     const [assessments, setAssessments] = useState([]);
+    const [studentMarks, setStudentMarks] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -109,17 +124,25 @@ const MarkPage = ({ userId, classId }) => {
                 setModules(moduleData);
                 const assessmentData = await getAssessments()
                 setAssessments(assessmentData)
+                const studentMarksData = await getStudentMarks(classId)
+                setStudentMarks(studentMarksData)
             } catch (error) {
                 console.error('Error fetching Students and Modules:', error);
             }
         };
         fetchData();
     }, [classId, userId]);
-    console.log("ASSESSMENTS", assessments)
+    console.log("Student marks", studentMarks)
     return (
         <Box>
             {students.map(student => (
-                <StudentItem key={student.id} student={student} modules={modules} assessments={assessments} />
+                <StudentItem
+                    key={student.id}
+                    student={student}
+                    modules={modules}
+                    assessments={assessments}
+                    studentMarks={studentMarks.filter(mark => mark.student_id === student.id)}
+                />
             ))}
         </Box>
     );
