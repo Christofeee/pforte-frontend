@@ -542,6 +542,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                             needRefetch={needRefetch}
                             setNeedRefetch={setNeedRefetch}
                             moduleId={moduleId}
+                            classId={classId}
                         />
                     </DialogContent>
                     <DialogActions>

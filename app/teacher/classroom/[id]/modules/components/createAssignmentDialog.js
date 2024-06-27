@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import AllFileDropzone from '../../components/allFileDropZone';
 
-const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch }) => {
+const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch, classId }) => {
     const [title, setTitle] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [instruction, setInstruction] = useState('');
@@ -51,6 +51,7 @@ const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch }) => 
         formData.append('instruction', instruction);
         formData.append('mark', marks);
         formData.append('module_id', moduleId);
+        formData.append('classroom_id', classId)
         formData.append('link', links.join(',')); // Combine links into a single string
         files.forEach((file, index) => {
             formData.append(`files[${index}]`, file);
