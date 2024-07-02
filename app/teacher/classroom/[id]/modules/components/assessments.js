@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import LinkIcon from '@mui/icons-material/Link';
 import Switch from '@mui/material/Switch';
-import { ButtonBase, Tooltip } from '@mui/material';
+import { Box, ButtonBase, Tooltip } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,6 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DownloadIcon from '@mui/icons-material/Download';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import { Button, Typography, CircularProgress, Grid } from "@mui/material";
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import getAssessmentsByModuleId from "../utils/getAssessmentsByModuleId";
 import AddIcon from '@mui/icons-material/Add';
@@ -205,25 +206,34 @@ export default function Assessments({ moduleId, classId, isStudent }) {
     return (
         <>
             <div className='text-end'>
-                <ButtonBase
+                <Button
+                    variant="contained"
                     onClick={() => setShowCreateModal(true)}
                     className='p-3 rounded'
                     sx={{
-                        textDecoration: 'none',
-                        bgcolor: '#98fb98',
+                        textTransform: 'none',
+                        padding: '.4rem', // Adjust padding for a larger button
+                        borderRadius: '8px', // Rounded corners
+                        backgroundColor: 'transparent', // Transparent background
+                        color: '#6a5bcd', // White text color
                         '&:hover': {
-                            bgcolor: '#5EFB5E'
-                        }
+                            backgroundColor: '#98fb98', // White background on hover
+                            color: 'black', // Blue text color on hover
+                        },
                     }}>
-                    Create
-                    <AddIcon className='ms-1' />
-                </ButtonBase>
+                    Create Assessment +
+                </Button>
             </div>
             {loadingAssessments && <CircularProgress />}
             {!isStudent && !loadingAssessments && (
                 <>
                     {assessments.map((assessment, index) => (
-                        <div className="my-5 p-5 shadow rounded">
+                        <Box
+                            className="my-5 p-5 rounded"
+                            sx={{
+                                boxShadow: 3
+                            }}
+                        >
                             <div style={containerStyle}>
                                 <Typography variant="h6" noWrap style={{ padding: '1rem' }}>
                                     {assessment.title}
@@ -235,18 +245,20 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                     {assessment.mark} marks
                                 </Typography>
                                 <Button
+                                    variant="contained"
                                     style={editStyle}
                                     onClick={() => handleDeleteAssessment(assessment.id)}
                                     className='py-1 rounded'
                                     sx={{
                                         textTransform: 'none',
-                                        fontSize: '0.8rem',
-                                        marginBottom: '8px',
-                                        bgcolor: '#ffcccc',
-                                        color: 'black',
+                                        padding: '.4rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: 'red', // White text color
                                         '&:hover': {
-                                            bgcolor: '#ff9999',
-                                        }
+                                            backgroundColor: '#ffcccc', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
                                     }}>
                                     <DeleteOutlineIcon />
                                 </Button>
@@ -264,38 +276,39 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                             Are you sure you want to delete the Assessment: <span style={{ fontSize: 'large' }}>{assessment.title}</span>
                                         </DialogContent>
                                         <DialogActions>
-                                            <div className='pt-5'>
-                                                <Button
-                                                    onClick={() => deleteAssessment(assessment.id)}
-                                                    onClose={() => setDeleteModalForAssessment(null)}
-                                                    type="submit"
-                                                    variant="contained"
-                                                    className="mx-3"
-                                                    sx={{
-                                                        color: "black",
-                                                        bgcolor: "#98fb98",
-                                                        '&:hover': {
-                                                            bgcolor: '#32cd32',
-                                                            color: 'black'
-                                                        }
-                                                    }}>Confirm</Button>
-                                            </div>
-                                            <div className='pt-5'>
-                                                <Button
-                                                    onClick={() => setDeleteModalForAssessment(null)}
-                                                    onClose={() => setDeleteModalForAssessment(null)}
-                                                    type="submit"
-                                                    variant="contained"
-                                                    className="mx-3"
-                                                    sx={{
-                                                        color: "black",
-                                                        bgcolor: "#cac1ff",
-                                                        '&:hover': {
-                                                            bgcolor: '#98fb98',
-                                                            color: 'black'
-                                                        }
-                                                    }}>Cancel</Button>
-                                            </div>
+                                            <Button
+                                                onClick={() => setDeleteModalForAssessment(null)}
+                                                onClose={() => setDeleteModalForAssessment(null)}
+                                                type="submit"
+                                                variant="contained"
+                                                className="mx-3"
+                                                sx={{
+                                                    textTransform: 'none',
+                                                    padding: '.4rem', // Adjust padding for a larger button
+                                                    borderRadius: '8px', // Rounded corners
+                                                    backgroundColor: 'transparent', // Transparent background
+                                                    color: '#6a5bcd', // White text color
+                                                    '&:hover': {
+                                                        backgroundColor: '#98fb98', // White background on hover
+                                                        color: 'black', // Blue text color on hover
+                                                    },
+                                                }}>Cancel</Button>
+                                            <Button
+                                                onClick={() => deleteAssessment(assessment.id)}
+                                                onClose={() => setDeleteModalForAssessment(null)}
+                                                type="submit"
+                                                variant="contained"
+                                                sx={{
+                                                    textTransform: 'none',
+                                                    padding: '.4rem', // Adjust padding for a larger button
+                                                    borderRadius: '8px', // Rounded corners
+                                                    backgroundColor: 'transparent', // Transparent background
+                                                    color: 'red', // White text color
+                                                    '&:hover': {
+                                                        backgroundColor: '#ffcccc', // White background on hover
+                                                        color: 'black', // Blue text color on hover
+                                                    },
+                                                }}>Confirm<DeleteOutlineIcon /></Button>
                                         </DialogActions>
                                     </div>
                                 </Dialog>
@@ -319,7 +332,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                             variant="outlined"
                                             style={{ width: "100%" }}
                                         >
-                                            <InsertDriveFileIcon />
+                                            <InsertDriveFileIcon sx={{ color: '#6a5bcd' }} />
                                             <CardContent style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: 'calc(100% - 60px)' }}>
                                                 <Tooltip title={file.file_name}>
                                                     <Typography fontWeight="md" textColor="success.plainColor">
@@ -347,7 +360,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                             onClick={() => window.open(link, '_blank', 'noopener,noreferrer')} // Updated onClick handler
                                         >
                                             <div style={{ display: "flex", alignItems: "center" }}>
-                                                <LinkIcon style={{ color: "primary.main" }} />
+                                                <LinkIcon style={{ color: "#6a5bcd" }} />
                                                 <CardContent className="mx-3" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: 'calc(100% - 60px)' }}>
                                                     <Tooltip title={link}>
                                                         <Typography fontWeight="md" textColor="primary.main">
@@ -361,33 +374,35 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                 ))}
                             </Grid>
                             <Grid container className="p-5 my-5">
-                                <Grid item xs={8} sm={8} md={8} lg={8}>
-                                    <Button
-                                        onClick={() => handleSubmissionsClick(assessment.id)}
-                                        className="p-5"
-                                        sx={{
-                                            width: '100%',
-                                            bgcolor: '#cac1ff',
-                                            color: 'black',
-                                            '&:hover': {
-                                                bgcolor: '#6a5bcd',
-                                                color: 'white'
-                                            }
-                                        }}
-                                    >
-                                        Submissions and Marks
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={4} sm={4} md={4} lg={4} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleSubmissionsClick(assessment.id)}
+                                    className="p-5"
+                                    sx={{
+                                        width: '100%',
+                                        textTransform: 'none',
+                                        padding: '.4rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: 'black', // White text color
+                                        '&:hover': {
+                                            backgroundColor: '#98fb98', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
+                                    }}
+                                >
+                                    <Typography variant="h6">Submissions and Marks</Typography>
+                                </Button>
+                                {/* <Grid item xs={4} sm={4} md={4} lg={4} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     open submission
                                     <Switch
                                         // checked={switchChecked}
                                         // onChange={handleSwitchChange}
                                         color="primary"
                                     />
-                                </Grid>
+                                </Grid> */}
                             </Grid>
-                        </div>
+                        </Box>
                     ))}
                 </>
             )}
@@ -403,8 +418,8 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                             className="mr-3"
                             sx={{
                                 textTransform: 'none',
-                                color: isSubmissionPage === true ? 'white' : 'black',
-                                bgcolor: isSubmissionPage === true ? '#6a5bcd' : 'white',
+                                color: isSubmissionPage === true ? '#6a5bcd' : 'black',
+                                boxShadow: isSubmissionPage === true ? '3' : '1',
                                 '&:hover': {
                                     bgcolor: '#6a5bcd',
                                     color: 'white'
@@ -416,8 +431,8 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                             className="mr-3"
                             sx={{
                                 textTransform: 'none',
-                                color: isSubmissionPage === false ? 'white' : 'black',
-                                bgcolor: isSubmissionPage === false ? '#6a5bcd' : 'white',
+                                color: isSubmissionPage === false ? '#6a5bcd' : 'black',
+                                boxShadow: isSubmissionPage === false ? '3' : '1',
                                 '&:hover': {
                                     bgcolor: '#6a5bcd',
                                     color: 'white'
@@ -431,7 +446,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                 <Typography variant="body1">There are no submissions yet.</Typography>
                             ) : (submissions.map((submission, index) => (
                                 <Card key={index} className="my-5" orientation="horizontal" variant="outlined" style={{ width: "100%" }}>
-                                    <FolderSharedIcon />
+                                    <FolderSharedIcon sx={{ color: '#6a5bcd' }} />
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                                         <CardContent style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             <Tooltip title={`By ${submission.student_name}`}>
@@ -441,7 +456,10 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                             </Tooltip>
                                         </CardContent>
                                         <div style={{ marginLeft: 'auto', cursor: 'pointer' }} onClick={() => handleSubmissionsClick(submission.assessment_id)}>
-                                            <DownloadIcon onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)} />
+                                            <DownloadIcon
+                                                sx={{ color: "#6a5bcd" }}
+                                                onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)}
+                                            />
                                         </div>
                                     </div>
                                 </Card>
@@ -452,14 +470,17 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                         onClick={() => setSubmissionModal(false)}
                                         type="submit"
                                         variant="contained"
-                                        className="mx-3"
+                                        className="px-5"
                                         sx={{
-                                            color: "black",
-                                            bgcolor: "#cac1ff",
+                                            textTransform: 'none',
+                                            padding: '.4rem', // Adjust padding for a larger button
+                                            borderRadius: '8px', // Rounded corners
+                                            backgroundColor: 'transparent', // Transparent background
+                                            color: '#6a5bcd', // White text color
                                             '&:hover': {
-                                                bgcolor: '#98fb98',
-                                                color: 'black'
-                                            }
+                                                backgroundColor: '#98fb98', // White background on hover
+                                                color: 'black', // Blue text color on hover
+                                            },
                                         }}>back</Button>
                                 </div>
                             </DialogActions>
@@ -495,32 +516,36 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                         )
                                     })}
                                     <DialogActions>
-                                        <div className="" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Button
-                                                className="shadow ml-5"
-                                                type="submit"
-                                                sx={{
-                                                    textTransform: 'none',
-                                                    '&:hover': {
-                                                        color: 'black',
-                                                        bgcolor: '#98fb98'
-                                                    }
-                                                }}>
-                                                Save
-                                            </Button>
-                                        </div>
-                                        <div className="" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Button
-                                                onClick={() => setSubmissionModal(false)}
-                                                className="shadow ml-5"
-                                                sx={{
-                                                    textTransform: 'none',
-                                                    '&:hover': {
-                                                        color: 'black',
-                                                        bgcolor: '#98fb98'
-                                                    }
-                                                }}>back</Button>
-                                        </div>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => setSubmissionModal(false)}
+                                            sx={{
+                                                textTransform: 'none',
+                                                padding: '.4rem', // Adjust padding for a larger button
+                                                borderRadius: '8px', // Rounded corners
+                                                backgroundColor: 'transparent', // Transparent background
+                                                color: '#6a5bcd', // White text color
+                                                '&:hover': {
+                                                    backgroundColor: '#98fb98', // White background on hover
+                                                    color: 'black', // Blue text color on hover
+                                                },
+                                            }}>back</Button>
+                                        <Button
+                                            variant="contained"
+                                            type="submit"
+                                            sx={{
+                                                textTransform: 'none',
+                                                padding: '.4rem', // Adjust padding for a larger button
+                                                borderRadius: '8px', // Rounded corners
+                                                backgroundColor: 'transparent', // Transparent background
+                                                color: '#6a5bcd', // White text color
+                                                '&:hover': {
+                                                    backgroundColor: '#98fb98', // White background on hover
+                                                    color: 'black', // Blue text color on hover
+                                                },
+                                            }}>
+                                            Save <SaveAltIcon />
+                                        </Button>
                                     </DialogActions>
                                 </form>
                             )}
@@ -531,53 +556,48 @@ export default function Assessments({ moduleId, classId, isStudent }) {
             <Dialog
                 open={showCreateModal}
                 onClose={() => setShowCreateModal(false)}>
-                <div
-                    className="p-5"
-                    style={{ width: "40vw" }}>
-                    <DialogTitle>Create Assessment</DialogTitle>
-                    <DialogContent>
-                        <CreateAssessmentDialog
-                            open={showCreateModal}
-                            onClose={() => setShowCreateModal(false)}
-                            needRefetch={needRefetch}
-                            setNeedRefetch={setNeedRefetch}
-                            moduleId={moduleId}
-                            classId={classId}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <div className='pt-5'>
-                            <Button
-                                onClick={() => setShowCreateModal(false)}
-                                type="submit"
-                                variant="contained"
-                                className="mx-3"
-                                sx={{
-                                    color: "black",
-                                    bgcolor: "#98fb98",
-                                    '&:hover': {
-                                        bgcolor: '#32cd32',
-                                        color: 'black'
-                                    }
-                                }}>Create</Button>
-                        </div>
-                        <div className='pt-5'>
-                            <Button
-                                onClick={() => setShowCreateModal(false)}
-                                type="submit"
-                                variant="contained"
-                                className="mx-3"
-                                sx={{
-                                    color: "black",
-                                    bgcolor: "#cac1ff",
-                                    '&:hover': {
-                                        bgcolor: '#98fb98',
-                                        color: 'black'
-                                    }
-                                }}>back</Button>
-                        </div>
-                    </DialogActions>
-                </div>
+                <DialogContent>
+                    <CreateAssessmentDialog
+                        open={showCreateModal}
+                        onClose={() => setShowCreateModal(false)}
+                        needRefetch={needRefetch}
+                        setNeedRefetch={setNeedRefetch}
+                        moduleId={moduleId}
+                        classId={classId}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <div className='pt-5'>
+                        <Button
+                            onClick={() => setShowCreateModal(false)}
+                            type="submit"
+                            variant="contained"
+                            className="mx-3"
+                            sx={{
+                                color: "black",
+                                bgcolor: "#98fb98",
+                                '&:hover': {
+                                    bgcolor: '#32cd32',
+                                    color: 'black'
+                                }
+                            }}>Create</Button>
+                    </div>
+                    <div className='pt-5'>
+                        <Button
+                            onClick={() => setShowCreateModal(false)}
+                            type="submit"
+                            variant="contained"
+                            className="mx-3"
+                            sx={{
+                                color: "black",
+                                bgcolor: "#cac1ff",
+                                '&:hover': {
+                                    bgcolor: '#98fb98',
+                                    color: 'black'
+                                }
+                            }}>back</Button>
+                    </div>
+                </DialogActions>
             </Dialog>
         </>
     );

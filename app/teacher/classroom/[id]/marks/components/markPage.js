@@ -44,10 +44,10 @@ const ModuleItem = ({ module, assessments, studentMarks }) => {
                 }}>
                 <Box>
                     <Typography variant="h6">{module.name}</Typography>
-                    <Typography variant="body2">{totalStudentModuleMark} / {totalModuleMark}</Typography>
+                    <Typography variant="body2" style={{ color: '#6a5bcd'}}>{totalStudentModuleMark} / {totalModuleMark}</Typography>
                 </Box>
                 <IconButton>
-                    <RotatingIcon open={open} />
+                    <RotatingIcon open={open} style={{ color: '#6a5bcd'}}/>
                 </IconButton>
             </Button>
             <Collapse in={open} timeout="auto" unmountOnExit>
@@ -58,7 +58,7 @@ const ModuleItem = ({ module, assessments, studentMarks }) => {
                                 <Typography variant="body1">{assessment.title}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography variant="body2">
+                                <Typography variant="body2" style={{ color: '#6a5bcd'}}>
                                     {(filteredStudentMarks.find(mark => mark.assessment_id === assessment.id) || { mark: 0 }).mark} / {assessment.mark}
                                 </Typography>
                             </Grid>
@@ -82,7 +82,7 @@ const StudentItem = ({ student, modules, assessments, studentMarks }) => {
     };
 
     return (
-        <Paper elevation={3} sx={{ mb: 2 }}>
+        <Paper sx={{ mb: 2 }}>
             <Button onClick={handleToggle} variant='contained'
                 sx={{
                     textTransform: 'none',
@@ -100,11 +100,11 @@ const StudentItem = ({ student, modules, assessments, studentMarks }) => {
                 }}>
                 <Box className="text-start">
                     <Typography variant="h6">{student.firstName} {student.lastName}</Typography>
-                    <Typography variant="body1">{totalClassEarnedMark.toFixed(2)} / 100</Typography>
+                    <Typography variant="body1" sx={{ color: '#6a5bcd'}}>{totalClassEarnedMark.toFixed(2)} / 100</Typography>
                     <Typography variant="body2" style={{color:'#A0A0A0'}}>Auto calculated from {totalStudentMark} / {totalClassMark}</Typography>
                 </Box>
                 <IconButton>
-                    <RotatingIcon open={open} />
+                    <RotatingIcon open={open} style={{ color: '#6a5bcd'}}/>
                 </IconButton>
             </Button>
             <Collapse in={open} timeout="auto" unmountOnExit>

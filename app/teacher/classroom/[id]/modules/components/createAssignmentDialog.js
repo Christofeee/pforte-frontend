@@ -10,6 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import AllFileDropzone from '../../components/allFileDropZone';
+import { DialogActions } from '@mui/material';
 
 const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch, classId }) => {
     const [title, setTitle] = useState('');
@@ -125,9 +126,6 @@ const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch, class
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <AllFileDropzone onFileDrop={handleFileDrop} setFileSelected={setFileSelected} />
-                        </Grid>
                         {showLinkInput && (
                             <>
                                 {links.map((link, index) => (
@@ -156,23 +154,61 @@ const CreateAssessmentDialog = ({ open, onClose, moduleId, setNeedRefetch, class
                         )}
                         {!showLinkInput && (
                             <Grid item xs={12} container justifyContent="center">
-                                <IconButton size="small" onClick={handleAddLink}>
-                                    <AddIcon /> Add Link
-                                </IconButton>
+                                <Button variant="contained" onClick={handleAddLink}
+                                    sx={{
+                                        width: '80%',
+                                        textTransform: 'none',
+                                        padding: '.8rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: '#6a5bcd', // White text color
+                                        '&:hover': {
+                                            backgroundColor: '#98fb98', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
+                                    }}>Add Link</Button>
                             </Grid>
                         )}
+                        <Grid item xs={12}>
+                            <AllFileDropzone onFileDrop={handleFileDrop} setFileSelected={setFileSelected} />
+                        </Grid>
                     </Grid>
-                    <div className="d-flex justify-content-end mt-3">
-                        <Button variant="contained" color="primary" type="submit">
-                            Create
-                        </Button>
-                        <Button variant="outlined" color="secondary" onClick={onClose} className="ml-2">
+                    <DialogActions>
+                        <Button variant="contained" color="secondary" onClick={onClose} className="ml-2" sx={{
+                            textTransform: 'none',
+                            padding: '.8rem', // Adjust padding for a larger button
+                            paddingX: '2rem', 
+                            borderRadius: '8px', // Rounded corners
+                            backgroundColor: 'transparent', // Transparent background
+                            color: '#6a5bcd', // White text color
+                            '&:hover': {
+                                backgroundColor: '#98fb98', // White background on hover
+                                color: 'black', // Blue text color on hover
+                            },
+                        }}
+                        >
                             Cancel
                         </Button>
-                    </div>
+                        <Button variant="contained" color="primary" type="submit"
+                            sx={{
+                                textTransform: 'none',
+                                padding: '.8rem', // Adjust padding for a larger button
+                                paddingX: '2rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: '#6a5bcd', // White text color
+                                '&:hover': {
+                                    backgroundColor: '#98fb98', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
+                            }}
+                        >
+                            Create
+                        </Button>
+                    </DialogActions>
                 </form>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };
 

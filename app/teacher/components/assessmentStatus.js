@@ -17,7 +17,8 @@ export default function AssessmentStatus() {
                         // onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search by class name ..."
                         style={{
-                            border: '1px solid #ccc',
+                            border: 'none',       // Remove border
+                            outline: 'none',
                             padding: '8px',
                             fontSize: '12px',
                             borderRadius: '4px',
@@ -33,35 +34,35 @@ export default function AssessmentStatus() {
                 <Grid container spacing={3}>
                     {/* {handleSearch().map((classItem) => ( */}
                     {[...Array(5)].map((_, index) => (
-                    <Grid item
-                        // key={classItem.classroom_id} 
-                        xs={12} sm={12} md={12}>
-                        <Card className=''>
-                            <CardContent style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div>
-                                    <Typography fontSize='15px' textAlign="start">
-                                        {/* {classItem.name} */}Classname
+                        <Grid item
+                            // key={classItem.classroom_id} 
+                            xs={12} sm={12} md={12}>
+                            <Card className=''>
+                                <CardContent style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div>
+                                        <Typography fontSize='15px' textAlign="start">
+                                            {/* {classItem.name} */}Classname
+                                        </Typography>
+                                        <Typography fontSize='10px' className="py-1" textAlign="start" color="textSecondary">
+                                            {/* {classItem.description} */}Module Name
+                                        </Typography>
+                                        <Typography fontSize='10px' className="py-1" textAlign="start" color="textSecondary">
+                                            {/* {classItem.description} */}Assessment Name
+                                        </Typography>
+                                        <Typography fontSize='10px' textAlign="start" className='ms-3 py-1' component="div">
+                                            <ul style={{ listStyleType: 'circle' }}>
+                                                <li>Start Date</li>
+                                                <li>Deadline</li>
+                                            </ul>
+                                        </Typography>
+                                    </div>
+                                    <Typography fontSize='12px' textAlign="start" alignContent='center' style={{ fontWeight: '', color: 'green' }}>
+                                        {/* {classItem.name} */}5 Submissions
                                     </Typography>
-                                    <Typography fontSize='10px' className="py-1" textAlign="start" color="textSecondary">
-                                        {/* {classItem.description} */}Module Name
-                                    </Typography>
-                                    <Typography fontSize='10px' className="py-1" textAlign="start" color="textSecondary">
-                                        {/* {classItem.description} */}Assessment Name
-                                    </Typography>
-                                    <Typography fontSize='10px' textAlign="start" className='ms-3 py-1' component="div">
-                                        <ul style={{ listStyleType: 'circle' }}>
-                                            <li>Start Date</li>
-                                            <li>Deadline</li>
-                                        </ul>
-                                    </Typography>
-                                </div>
-                                <Typography fontSize='12px' textAlign="start" alignContent='center' style={{ fontWeight: '', color: 'green' }}>
-                                    {/* {classItem.name} */}5 Submissions
-                                </Typography>
-                                <Button size="small" startIcon={<ArrowForwardIosIcon />} />
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                                    <Button size="small" startIcon={<ArrowForwardIosIcon />} />
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
                     {/* ))} */}
                 </Grid>

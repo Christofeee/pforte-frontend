@@ -6,6 +6,7 @@ import AuthCheck from "@/utils/authCheck";
 import ClassName from "../components/className";
 import ClassNav from "../components/classNav";
 import MarkPage from "./components/markPage";
+import AdminHomeButton from "@/app/admin/components/AdminHomeButton";
 
 export default async function Marks({ params }) {
   const session = await getServerSession(authOptions);
@@ -22,10 +23,11 @@ export default async function Marks({ params }) {
   return (
     <AuthCheck session={session} roleToCheck="teacher">
       <main className="p-5">
+        <AdminHomeButton path='/teacher' />
         <ClassName classId={params.id} />
         <ClassNav classId={params.id} />
         <div className="p-5">
-          <MarkPage userID={userID} classId={params.id}/>
+          <MarkPage userID={userID} classId={params.id} />
         </div>
       </main>
     </AuthCheck>

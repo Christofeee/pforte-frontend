@@ -30,6 +30,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Modal, Backdrop, CircularProgress } from '@mui/material';
 
 import { useRouter } from 'next/navigation';
+import ComingSoon from '@/components/ComingSoon';
 
 export default function ModulePage({ classId, moduleId }) {
     console.log(classId)
@@ -179,7 +180,7 @@ export default function ModulePage({ classId, moduleId }) {
             case 'PDFs':
                 return <Pdfs moduleId={moduleId} isStudent={switchChecked} />
             case 'Videos':
-                return <>videos</>
+                return <ComingSoon />
             case 'Assessments':
                 return <ModuleAssessments moduleId={moduleId} classId={classId} isStudent={switchChecked} />
             default:
@@ -202,30 +203,39 @@ export default function ModulePage({ classId, moduleId }) {
                 <div style={{ marginLeft: "auto" }} >
                     <Button
                         onClick={handleDeleteClick}
-                        className='p-3 rounded'
+                        variant='contained'
                         sx={{
-                            bgcolor: '#ffcccc',
-                            color: 'black',
+                            textTransform: 'none',
+                            padding: '.4rem', // Adjust padding for a larger button
+                            borderRadius: '8px', // Rounded corners
+                            backgroundColor: 'transparent', // Transparent background
+                            color: 'red', // White text color
                             '&:hover': {
-                                bgcolor: '#ff9999',
-                            }
+                                backgroundColor: '#ffcccc', // White background on hover
+                                color: 'black', // Blue text color on hover
+                            },
                         }}>
                         <DeleteOutlineIcon />
                     </Button>
                     <Button
+                        className='ml-3'
+                        variant='contained'
                         onClick={handleEditClick}
-                        className='p-3 ms-3 rounded'
                         sx={{
-                            bgcolor: '#98fb98',
-                            color: 'black',
+                            textTransform: 'none',
+                            padding: '.4rem', // Adjust padding for a larger button
+                            borderRadius: '8px', // Rounded corners
+                            backgroundColor: 'transparent', // Transparent background
+                            color: '#6a5bcd', // White text color
                             '&:hover': {
-                                bgcolor: '#5EFB5E'
-                            }
+                                backgroundColor: '#98fb98', // White background on hover
+                                color: 'black', // Blue text color on hover
+                            },
                         }}>
                         <EditIcon />
                     </Button>
                 </div>
-            </div>
+            </div >
             <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
                 {loading ? "Loading..." : moduleData?.description}
                 Description that can be long and should stay in a single line and truncate if too lengthy. Phasellus sed sapien maximus, vestibulum urna ultricies, mattis metus. Etiam pretium cursus quam sit amet hendrerit. Morbi urna enim, fermentum ut vestibulum eget, ultricies ac eros. Sed suscipit porta massa, feugiat feugiat sem feugiat eu. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed ex ex, eleifend
@@ -268,11 +278,11 @@ export default function ModulePage({ classId, moduleId }) {
                                     sx={{
                                         width: "100%",
                                         my: 1,
-                                        color: page.name === currentPage ? 'white' : "black",
+                                        color: page.name === currentPage ? '#6a5bcd' : "black",
                                         display: 'block',
                                         textTransform: 'none',
                                         mr: 1,
-                                        backgroundColor: page.name === currentPage ? '#6a5bcd' : 'transparent',
+                                        boxShadow: page.name === currentPage ? '3' : '1',
                                         transition: 'background-color 0.3s ease, color 0.5s ease', // Transition for transform change
                                         '&:hover': {
                                             backgroundColor: '#98fb98',
@@ -295,11 +305,11 @@ export default function ModulePage({ classId, moduleId }) {
                                 onClick={() => { handlePageChange(page.name); handleCloseNavMenu(); }}
                                 sx={{
                                     my: 1,
-                                    color: page.name === currentPage ? 'black' : "black",
+                                    color: page.name === currentPage ? '#6a5bcd' : "black",
                                     display: 'block',
                                     textTransform: 'none',
                                     mr: 1,
-                                    backgroundColor: page.name === currentPage ? '#cac1ff' : 'transparent',
+                                    boxShadow: page.name === currentPage ? '3' : '1',
                                     transition: 'background-color 0.3s ease, color 0.5s ease', // Transition for transform change
                                     '&:hover': {
                                         backgroundColor: '#98fb98',
@@ -356,29 +366,36 @@ export default function ModulePage({ classId, moduleId }) {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <div className='pt-5'>
+                    <div className='p-5'>
                         <Button
                             onClick={handleCloseModal}
                             type="submit"
                             variant="contained"
                             className="mx-3"
                             sx={{
-                                color: "black",
-                                bgcolor: "#cac1ff",
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: '#6a5bcd', // White text color
                                 '&:hover': {
-                                    bgcolor: '#98fb98',
-                                    color: 'black'
-                                }
+                                    backgroundColor: '#98fb98', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
                             }}>Cancel</Button>
                         <Button
                             onClick={handleSaveChanges}
                             variant="contained"
                             sx={{
-                                bgcolor: '#98fb98',
-                                color: "black",
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: '#6a5bcd', // White text color
                                 '&:hover': {
-                                    bgcolor: '#5EFB5E'
-                                }
+                                    backgroundColor: '#98fb98', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
                             }}>Save <SaveAltIcon /></Button>
 
                     </div>
@@ -409,26 +426,32 @@ export default function ModulePage({ classId, moduleId }) {
                         <p id="delete-pdf-modal-description" className="py-2">This Module will be deleted.</p>
                     </div>
                     <div className="text-end">
+                        <Button variant="contained" onClick={handleDeleteCloseModal}
+                            sx={{
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: '#6a5bcd', // White text color
+                                '&:hover': {
+                                    backgroundColor: '#98fb98', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
+                            }}>Cancel</Button>
                         <Button variant="contained"
                             onClick={() => deleteModule()}
                             className="mx-3"
                             sx={{
-                                bgcolor: "#ffcccc",
-                                color: 'black',
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: 'red', // White text color
                                 '&:hover': {
-                                    bgcolor: '#ff9999',
-                                    color: 'black'
-                                }
+                                    backgroundColor: '#ffcccc', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
                             }}>Confirm <DeleteOutlineIcon /></Button>
-                        <Button variant="contained" onClick={handleDeleteCloseModal}
-                            sx={{
-                                color: "black",
-                                bgcolor: "#cac1ff",
-                                '&:hover': {
-                                    bgcolor: '#98fb98',
-                                    color: 'black'
-                                }
-                            }}>Cancel</Button>
                     </div>
                 </Box>
             </Modal>

@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import getClassesByUserId from './getClassesByUserId';
 import { useRouter } from 'next/navigation';
@@ -35,27 +35,33 @@ export default function Classes({ userID }) {
     const handleEnterClass = (classId) => {
         // Ensure classId is a string
         // const stringClassId = typeof classId === 'string' ? classId : classId.toString();
-        router.push(`/teacher/classroom/${classId}/summary`);
+        router.push(`/teacher/classroom/${classId}/modules`);
     }
 
     return (
         <div>
             <div className='pb-3' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>Assigned Classes</div>
+                <Typography variant='h5'>Assigned Classes</Typography>
                 <div style={{ position: 'relative' }}>
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search by class name ..."
-                        style={{
-                            border: '1px solid #ccc',
-                            padding: '8px',
-                            fontSize: '12px',
-                            borderRadius: '4px',
-                            width: '200px',
-                        }}
-                    />
+                    <Box
+                        className='p-1'
+                        sx={{ boxShadow: 1, borderRadius: 3 }}
+                    >
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by class name ..."
+                            style={{
+                                border: 'none',       // Remove border
+                                outline: 'none',
+                                padding: '8px',
+                                fontSize: '12px',
+                                width: '200px',
+                                borderRadius: '3'
+                            }}
+                        />
+                    </Box>
                     <div style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
                         <SearchIcon style={{ color: '#6a5bcd' }} />
                     </div>
@@ -71,7 +77,7 @@ export default function Classes({ userID }) {
                                         <Typography fontSize='15px' textAlign="start">
                                             {classItem.name}
                                         </Typography>
-                                        <Typography fontSize='10px' className="py-1" textAlign="start" color="textSecondary">
+                                        <Typography fontSize='13px' className="py-1" textAlign="start" color="textSecondary">
                                             {classItem.description}
                                         </Typography>
                                         {/* <Typography variant="body2" textAlign="start" className='ms-3 py-1' component="div">
@@ -82,10 +88,16 @@ export default function Classes({ userID }) {
                                         </Typography> */}
                                     </div>
                                     <Button
-                                        size="small"
-                                        startIcon={<ArrowForwardIosIcon />}
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: '#98fb98', // White background on hover
+                                                color: 'black', // Blue text color on hover
+                                            },
+                                        }}
                                         onClick={() => handleEnterClass(classItem.classroom_id)}
-                                    />
+                                    >
+                                        <ArrowForwardIosIcon style={{ color: '#6a5bcd' }} />
+                                    </Button>
                                 </CardContent>
                             </Card>
                         </Grid>

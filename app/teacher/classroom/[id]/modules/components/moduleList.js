@@ -43,12 +43,13 @@ export default function ModuleList({ classId }) {
 
     console.log(modules)
 
-    const Checkbox = ({ isChecked, handleChange }) => {
+    const Checkbox = ({ isChecked, handleChange, disabled }) => {
         return (
             <input
                 type="checkbox"
                 checked={isChecked}
                 onChange={handleChange}
+                disabled={disabled}
             />
         );
     };
@@ -104,23 +105,29 @@ export default function ModuleList({ classId }) {
     return (
         <>
             <div className='text-end'>
-                <ButtonBase
+                <Button
+                    variant="contained"
                     onClick={() => setShowAddModuleModal(true)}
-                    className='p-3 rounded'
+                    className="px-3"
                     sx={{
-                        bgcolor: '#98fb98',
+                        textTransform: 'none',
+                        padding: '.4rem', // Adjust padding for a larger button
+                        borderRadius: '8px', // Rounded corners
+                        backgroundColor: 'transparent', // Transparent background
+                        color: '#6a5bcd', // White text color
                         '&:hover': {
-                            bgcolor: '#5EFB5E'
-                        }
+                            backgroundColor: '#98fb98', // White background on hover
+                            color: 'black', // Blue text color on hover
+                        },
                     }}>
-                    Add
+                    Add Module
                     <AddIcon className='ms-1' />
-                </ButtonBase>
+                </Button>
             </div>
             {handleSearch().map((module) => (
                 <Grid container spacing={2} className='p-1 pb-5 mb-5' alignItems={'center'}>
                     <Grid item xs={12} md={9}>
-                        <div className='bg-gray-100 p-5' style={{ borderRadius: '10px', display: 'flex' }}>
+                        <Box className='p-5' sx={{ borderRadius: '10px', display: 'flex', boxShadow: 1 }}>
                             <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>
                                 <Typography variant='h6' noWrap>
                                     {module.name}
@@ -131,17 +138,28 @@ export default function ModuleList({ classId }) {
                             </Box>
                             <Button
                                 onClick={() => enterModule(classId, module.id)}
-                                sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: '16px' }}>
+                                sx={{
+                                    color: '#6a5bcd',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    marginLeft: '16px',
+                                    '&:hover': {
+                                        backgroundColor: '#98fb98', // White background on hover
+                                        color: 'black', // Blue text color on hover
+                                    },
+                                }}>
                                 <ArrowForwardIosIcon />
                             </Button>
-                        </div>
+                        </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <div className='' style={{ borderRadius: '10px' }}>
-                            <Typography variant='body2' color='textSecondary' className='flex'>
-                                <Checkbox isChecked={module.isComplete} handleChange={handleCheckboxChange} />
+                            <Typography variant='body2' style={{ color: '#cac1ff' }} className='flex'>
+                                <Checkbox isChecked={module.isComplete} handleChange={handleCheckboxChange} disabled={true} />
                                 <span className='px-5'>
-                                    Instruction Complete
+                                    Instruction Complete Feature Is <span style={{ color: '#6a5bcd' }}>Comming Soon</span>
                                 </span>
                             </Typography>
                         </div>
@@ -193,26 +211,33 @@ export default function ModuleList({ classId }) {
                                 fullWidth
                             />
                             <div className='pt-5'>
+                                <Button variant="contained" onClick={() => setShowAddModuleModal(false)}
+                                    sx={{
+                                        textTransform: 'none',
+                                        padding: '.4rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: '#6a5bcd', // White text color
+                                        '&:hover': {
+                                            backgroundColor: '#98fb98', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
+                                    }}>Cancel</Button>
                                 <Button
                                     type="submit"
                                     variant="contained"
                                     className="mx-3"
                                     sx={{
-                                        bgcolor: '#98fb98',
-                                        color: "black",
+                                        textTransform: 'none',
+                                        padding: '.4rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: '#6a5bcd', // White text color
                                         '&:hover': {
-                                            bgcolor: '#5EFB5E'
-                                        }
-                                    }}>Confirm <AddIcon /></Button>
-                                <Button variant="contained" onClick={() => setShowAddModuleModal(false)}
-                                    sx={{
-                                        color: "black",
-                                        bgcolor: "#cac1ff",
-                                        '&:hover': {
-                                            bgcolor: '#98fb98',
-                                            color: 'black'
-                                        }
-                                    }}>Cancel</Button>
+                                            backgroundColor: '#98fb98', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
+                                    }}>Add</Button>
                             </div>
                         </form>
 

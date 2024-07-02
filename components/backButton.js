@@ -13,7 +13,7 @@ export default function BackButton() {
     }
     return (
         <Button onClick={handleOnclick}>
-            <ArrowBackIos />
+            <ArrowBackIos style={{ color: '#6a5bcd'}} />
         </Button>
     )
 }

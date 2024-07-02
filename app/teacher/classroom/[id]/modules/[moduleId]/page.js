@@ -6,6 +6,7 @@ import AuthCheck from "@/utils/authCheck";
 import ClassName from "../../components/className";
 import ClassNav from "../../components/classNav";
 import ModulePage from "./modulePage";
+import AdminHomeButton from "@/app/admin/components/AdminHomeButton";
 
 export default async function Module({ params }) {
     const session = await getServerSession(authOptions);
@@ -24,6 +25,7 @@ export default async function Module({ params }) {
     return (
         <AuthCheck session={session} roleToCheck="teacher">
             <main className="p-5">
+                <AdminHomeButton path='/teacher' />
                 <ClassName classId={params.id} />
                 <ClassNav classId={params.id} />
                 <div className="p-5">

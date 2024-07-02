@@ -4,7 +4,7 @@ import FileDropZone from "../../components/fileDropZone";
 import uploadPdf from "../utils/uploadPdf";
 import getPdfsById from "../utils/getPdfsById";
 import DocViewer, { PDFRenderer } from "@cyntler/react-doc-viewer";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import { Button, Grid, Modal, Box, Typography, CircularProgress, Card, CardContent, ButtonBase, CardActions, Checkbox } from "@mui/material";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -154,47 +154,64 @@ export default function Pdfs({ moduleId, isStudent }) {
         <>
             {!isStudent && (
                 <div className="d-flex text-end">
-                    <ButtonBase className="d-inline-block mx-5">
-                        <Checkbox
-                            checked={selectAll}
-                            onChange={handleSelectAll}
-                        />
-                        <Typography className="p-1">
-                            Select All
-                        </Typography>
-                    </ButtonBase>
                     <Button
-                        onClick={() => handleDeletePdf()}
-                        className="mx-1 py-3"
-                        size="small"
-                        variant="text"
+                        // className="d-inline-block mx-5"
+                        variant="contained"
+                        onClick={handleSelectAll}
                         sx={{
                             textTransform: 'none',
-                            fontSize: '0.8rem',
-                            marginBottom: '8px',
-                            bgcolor: '#ffcccc',
-                            color: 'black',
+                            padding: '.1rem', // Adjust padding for a larger button
+                            borderRadius: '8px', // Rounded corners
+                            backgroundColor: 'transparent', // Transparent background
+                            color: '#6a5bcd', // White text color
                             '&:hover': {
-                                bgcolor: '#ff9999',
-                            }
+                                backgroundColor: '#98fb98', // White background on hover
+                                color: 'black', // Blue text color on hover
+                            },
+                        }}
+                    >
+                        <Checkbox
+                            checked={selectAll}
+                            size="1rem"
+                            color="success"
+                        />
+                        <Typography sx={{ color: 'black' }} className="pr-3">
+                            Select All
+                        </Typography>
+                    </Button>
+                    <Button
+                        onClick={() => handleDeletePdf()}
+                        className="mx-3"
+                        size="small"
+                        variant="contained"
+                        sx={{
+                            textTransform: 'none',
+                            padding: '.4rem', // Adjust padding for a larger button
+                            borderRadius: '8px', // Rounded corners
+                            backgroundColor: 'transparent', // Transparent background
+                            color: 'red', // White text color
+                            '&:hover': {
+                                backgroundColor: '#ffcccc', // White background on hover
+                                color: 'black', // Blue text color on hover
+                            },
                         }}
                     >
                         <DeleteOutlineIcon />
                     </Button>
                     <Button
-                        className="mx-1 py-3"
                         size="small"
-                        variant="text"
+                        variant="contained"
                         onClick={handleOpenModal}
                         sx={{
                             textTransform: 'none',
-                            fontSize: '0.8rem',
-                            marginBottom: '8px',
-                            bgcolor: '#cac1ff',
-                            color: 'black',
+                            padding: '.4rem', // Adjust padding for a larger button
+                            borderRadius: '8px', // Rounded corners
+                            backgroundColor: 'transparent', // Transparent background
+                            color: '#6a5bcd', // White text color
                             '&:hover': {
-                                bgcolor: '#98fb98',
-                            }
+                                backgroundColor: '#98fb98', // White background on hover
+                                color: 'black', // Blue text color on hover
+                            },
                         }}
                     >
                         <UploadFileIcon />
@@ -212,36 +229,42 @@ export default function Pdfs({ moduleId, isStudent }) {
                                     <div
                                         style={{ width: "100%", height: "100%", display: "block", textDecoration: "none" }}
                                     >
-                                        <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
+                                        <Card className="pt-5 px-5" elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column", position: "relative" }}>
                                             <ButtonBase
                                                 onClick={() => handleSelectItem(pdf.id)}
                                                 style={{ flexDirection: "column" }}>
                                                 <div style={{ position: "absolute", top: 0, left: 0 }}>
-                                                    <Checkbox checked={selectedItems.includes(pdf.id)} />
+                                                    <Checkbox size="small" checked={selectedItems.includes(pdf.id)} color="success" />
                                                 </div>
                                                 <div>
-                                                    <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
+                                                    <InsertDriveFileOutlinedIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
                                                 </div>
                                             </ButtonBase>
                                             <Typography
-                                                variant="subtitle1"
                                                 className="px-3"
-                                                style={{ marginTop: "10px", textAlign: "start", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                sx={{ marginTop: "10px", textAlign: "start", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 'small' }}>
                                                 {pdf.title}
                                             </Typography>
                                             <div className="p-3">
-                                                <ButtonBase
+                                                <Button
+                                                    variant="contained"
                                                     className="rounded"
                                                     onClick={() => handlePdfClick(pdf)}
                                                     sx={{
-                                                        width: "100%",
-                                                        backgroundColor: "#cac1ff",
+                                                        width: '100%',
+                                                        textTransform: 'none',
+                                                        paddingY: 0,
+                                                        paddingX: '.4rem', // Adjust padding for a larger button
+                                                        borderRadius: '8px', // Rounded corners
+                                                        backgroundColor: 'transparent', // Transparent background
+                                                        color: '#6a5bcd', // White text color
                                                         '&:hover': {
-                                                            backgroundColor: "#98fb98"
-                                                        }
+                                                            backgroundColor: '#98fb98', // White background on hover
+                                                            color: 'black', // Blue text color on hover
+                                                        },
                                                     }}>
                                                     <CardActions>View</CardActions>
-                                                </ButtonBase>
+                                                </Button>
                                             </div>
                                         </Card>
 
@@ -254,7 +277,7 @@ export default function Pdfs({ moduleId, isStudent }) {
                                     >
                                         <Card elevation={3} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
                                             <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                                                <InsertDriveFileIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
+                                                <InsertDriveFileOutlinedIcon style={{ fontSize: 60, color: "#6a5bcd", alignSelf: "center" }} />
                                                 <Typography variant="subtitle1" style={{ marginTop: "10px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                                     {pdf.title}
                                                 </Typography>
@@ -369,11 +392,15 @@ export default function Pdfs({ moduleId, isStudent }) {
                     <div className="text-end">
                         <Button variant="contained" onClick={() => setShowDeleteWarning(false)}
                             sx={{
-                                bgcolor: "#6a5bcd",
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: '#6a5bcd', // White text color
                                 '&:hover': {
-                                    bgcolor: '#98fb98',
-                                    color: 'black'
-                                }
+                                    backgroundColor: '#98fb98', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
                             }}>
                             Close</Button>
                     </div>
@@ -403,25 +430,31 @@ export default function Pdfs({ moduleId, isStudent }) {
                         <p id="delete-pdf-modal-description" className="py-2">Selected PDF(s) will be deleted.</p>
                     </div>
                     <div className="text-end">
+                        <Button variant="contained" onClick={() => setShowConfirmDelete(false)}
+                            sx={{
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: '#6a5bcd', // White text color
+                                '&:hover': {
+                                    backgroundColor: '#98fb98', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
+                            }}>Cancel</Button>
                         <Button variant="contained" onClick={() => deletePdf()}
                             className="mx-3"
                             sx={{
-                                bgcolor: "#ffcccc",
-                                color: 'black',
+                                textTransform: 'none',
+                                padding: '.4rem', // Adjust padding for a larger button
+                                borderRadius: '8px', // Rounded corners
+                                backgroundColor: 'transparent', // Transparent background
+                                color: 'red', // White text color
                                 '&:hover': {
-                                    bgcolor: '#ff9999',
-                                    color: 'black'
-                                }
+                                    backgroundColor: '#ffcccc', // White background on hover
+                                    color: 'black', // Blue text color on hover
+                                },
                             }}>Confirm <DeleteOutlineIcon /></Button>
-                        <Button variant="contained" onClick={() => setShowConfirmDelete(false)}
-                            sx={{
-                                color: "black",
-                                bgcolor: "#cac1ff",
-                                '&:hover': {
-                                    bgcolor: '#98fb98',
-                                    color: 'black'
-                                }
-                            }}>Cancel</Button>
                     </div>
                 </Box>
             </Modal>

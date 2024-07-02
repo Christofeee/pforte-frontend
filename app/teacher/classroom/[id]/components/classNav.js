@@ -18,11 +18,11 @@ function ClassNav({ classId }) {
     const currentPath = usePathname()
     console.log(currentPath)
     const pages = [
-        { name: 'Summary', path: `/teacher/classroom/${classId}/summary` },
+        // { name: 'Summary', path: `/teacher/classroom/${classId}/summary` },
         { name: 'Modules', path: `/teacher/classroom/${classId}/modules` },
-        { name: 'Assessments', path: `/teacher/classroom/${classId}/assessments` },
-        { name: 'Announcements', path: `/teacher/classroom/${classId}/announcements` },
-        { name: 'Marks', path: `/teacher/classroom/${classId}/marks` }
+        // { name: 'Assessments', path: `/teacher/classroom/${classId}/assessments` },
+        // { name: 'Announcements', path: `/teacher/classroom/${classId}/announcements` },
+        { name: 'Marks Dashboard', path: `/teacher/classroom/${classId}/marks` }
     ];
 
     const handleOpenNavMenu = (event) => {
@@ -70,7 +70,7 @@ function ClassNav({ classId }) {
                                 <Button
                                     onClick={handleCloseNavMenu}
                                     sx={{
-                                        width:'100%',
+                                        width: '100%',
                                         my: 2,
                                         color: currentPath.includes(page.path) ? 'white' : 'black',
                                         display: 'block',
@@ -98,11 +98,11 @@ function ClassNav({ classId }) {
                                 onClick={handleCloseNavMenu}
                                 sx={{
                                     my: 2,
-                                    color: currentPath.includes(page.path) ? 'white' : 'black',
+                                    color: currentPath.includes(page.path) ? '#6a5bcd' : 'black',
                                     display: 'block',
                                     textTransform: 'none',
                                     mr: 2,
-                                    backgroundColor: currentPath.includes(page.path) ? '#6a5bcd' : 'transparent',
+                                    boxShadow: currentPath.includes(page.path) ? '3' : '1',
                                     transition: 'background-color 0.3s ease,color 0.5s ease', // Transition for transform change
                                     '&:hover': {
                                         backgroundColor: '#98fb98',
@@ -114,6 +114,41 @@ function ClassNav({ classId }) {
                             </Button>
                         </Link>
                     ))}
+                    <Button
+                        sx={{
+                            marginLeft: 10,
+                            my: 2,
+                            color: 'black',
+                            display: 'block',
+                            textTransform: 'none',
+                            mr: 2,
+                            transition: 'background-color 0.3s ease,color 0.5s ease', // Transition for transform change
+                            '&:hover': {
+                                backgroundColor: '#98fb98',
+                                color: 'black'
+                            },
+                        }}
+                        disabled
+                    >
+                        Assessment Dashboard (Comming Soon)
+                    </Button>
+                    <Button
+                        sx={{
+                            my: 2,
+                            color: 'black',
+                            display: 'block',
+                            textTransform: 'none',
+                            mr: 2,
+                            transition: 'background-color 0.3s ease,color 0.5s ease', // Transition for transform change
+                            '&:hover': {
+                                backgroundColor: '#98fb98',
+                                color: 'black'
+                            },
+                        }}
+                        disabled
+                    >
+                        Announcements (Comming Soon)
+                    </Button>
                 </Box>
             </Toolbar>
         </AppBar>
