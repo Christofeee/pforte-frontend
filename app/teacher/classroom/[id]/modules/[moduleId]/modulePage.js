@@ -26,14 +26,23 @@ import AddIcon from '@mui/icons-material/Add';
 import getModuleById from "../utils/getModuleById";
 import { Assessment } from '@mui/icons-material';
 import ModuleAssessments from '../components/assessments';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Modal, Backdrop, CircularProgress } from '@mui/material';
+
+import { useRouter } from 'next/navigation';
 
 export default function ModulePage({ classId, moduleId }) {
+    console.log(classId)
+    const router = useRouter();
+
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [currentPage, setCurrentPage] = React.useState('PDFs');
     const [switchChecked, setSwitchChecked] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [moduleData, setModuleData] = React.useState(null);
     const [openEditModal, setOpenEditModal] = React.useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
+    const [deleting, setDeleting] = React.useState(false);
     const [needRefetch, setNeedRefetch] = React.useState(false);
     const [formValues, setFormValues] = React.useState({
         name: '',
@@ -100,8 +109,16 @@ export default function ModulePage({ classId, moduleId }) {
         setOpenEditModal(true);
     };
 
+    const handleDeleteClick = () => {
+        setOpenDeleteModal(true);
+    }; handleDeleteClick
+
     const handleCloseModal = () => {
         setOpenEditModal(false);
+    };
+
+    const handleDeleteCloseModal = () => {
+        setOpenDeleteModal(false);
     };
 
     const handleInputChange = (event) => {
@@ -131,14 +148,25 @@ export default function ModulePage({ classId, moduleId }) {
         }
     };
 
+    const deleteModule = async () => {
+        try {
+            handleDeleteCloseModal()
+            setDeleting(true)
+            const response = await axios.delete(`http://localhost:8000/api/module/${moduleId}`)
+
+            if (response.status !== 200) {
+                throw new Error('Failed to delete module');
+            }
+            router.push(`/teacher/classroom/${classId}/modules`)
+        } catch (error) {
+            console.error('Error deleting module:', error);
+            setDeleting(false)
+        }
+    }
+
     const containerStyle = {
         display: 'flex',
         alignItems: 'center',
-    };
-
-    const editStyle = {
-        marginLeft: 'auto',
-        cursor: 'pointer'
     };
 
     const descriptionStyle = {
@@ -161,24 +189,42 @@ export default function ModulePage({ classId, moduleId }) {
 
     return (
         <>
+            {deleting && ( // Conditionally render loading spinner if loading state is true
+                <Backdrop open={deleting} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'white', color: '#8a2ce2' }}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+            )}
             <div style={containerStyle}>
                 <BackButton />
                 <Typography variant="h6" noWrap style={{ padding: '1rem' }}>
                     {loading ? "Loading..." : moduleData?.name}
                 </Typography>
-                <Button
-                    style={editStyle}
-                    onClick={handleEditClick}
-                    className='p-3 rounded'
-                    sx={{
-                        bgcolor: '#98fb98',
-                        color: 'black',
-                        '&:hover': {
-                            bgcolor: '#5EFB5E'
-                        }
-                    }}>
-                    <EditIcon />
-                </Button>
+                <div style={{ marginLeft: "auto" }} >
+                    <Button
+                        onClick={handleDeleteClick}
+                        className='p-3 rounded'
+                        sx={{
+                            bgcolor: '#ffcccc',
+                            color: 'black',
+                            '&:hover': {
+                                bgcolor: '#ff9999',
+                            }
+                        }}>
+                        <DeleteOutlineIcon />
+                    </Button>
+                    <Button
+                        onClick={handleEditClick}
+                        className='p-3 ms-3 rounded'
+                        sx={{
+                            bgcolor: '#98fb98',
+                            color: 'black',
+                            '&:hover': {
+                                bgcolor: '#5EFB5E'
+                            }
+                        }}>
+                        <EditIcon />
+                    </Button>
+                </div>
             </div>
             <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
                 {loading ? "Loading..." : moduleData?.description}
@@ -338,6 +384,54 @@ export default function ModulePage({ classId, moduleId }) {
                     </div>
                 </DialogActions>
             </Dialog>
+            {/* Delete Confirm Modal */}
+            <Modal
+                open={openDeleteModal}
+                onClose={handleDeleteCloseModal}
+                aria-labelledby="delete-module-modal-title"
+                aria-describedby="delete-module-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 400,
+                        bgcolor: 'white',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '10px',
+                    }}
+                >
+                    <div className="p-3">
+                        <h2 id="delete-pdf-modal-title" style={{ color: "red", fontSize: "large" }} className="py-2">Warning:</h2>
+                        <p id="delete-pdf-modal-description" className="py-2">This Module will be deleted.</p>
+                    </div>
+                    <div className="text-end">
+                        <Button variant="contained"
+                            onClick={() => deleteModule()}
+                            className="mx-3"
+                            sx={{
+                                bgcolor: "#ffcccc",
+                                color: 'black',
+                                '&:hover': {
+                                    bgcolor: '#ff9999',
+                                    color: 'black'
+                                }
+                            }}>Confirm <DeleteOutlineIcon /></Button>
+                        <Button variant="contained" onClick={handleDeleteCloseModal}
+                            sx={{
+                                color: "black",
+                                bgcolor: "#cac1ff",
+                                '&:hover': {
+                                    bgcolor: '#98fb98',
+                                    color: 'black'
+                                }
+                            }}>Cancel</Button>
+                    </div>
+                </Box>
+            </Modal>
         </>
     );
 }
