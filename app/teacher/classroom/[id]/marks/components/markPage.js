@@ -3,139 +3,160 @@
 import React, { useState, useEffect } from 'react';
 import getStudents from '../utils/getStudents';
 import getModules from '../../modules/utils/getModules';
-import { Box, Typography, IconButton, Collapse, Button } from '@mui/material';
+import { Box, Typography, IconButton, Collapse, Paper, Divider, Button, Grid, Avatar, Tooltip, Chip } from '@mui/material';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { styled } from '@mui/system';
-import getAssessmentsByClassId from '../utils/getAssessmentsByClassId';
 import getStudentMarks from '../utils/getStudentMarks';
+import getAssessmentsByClassId from '../utils/getAssessmentsByClassId';
 
-const RotatingIcon = styled(ArrowForwardIos)(({ open }) => ({
+const RotatingIcon = styled(ArrowForwardIos)(({ theme, open }) => ({
     transition: 'transform 0.3s ease-in-out',
     transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
 }));
+
+const ModuleItem = ({ module, assessments, studentMarks }) => {
+    const [open, setOpen] = useState(false);
+
+    const handleToggle = () => {
+        setOpen(!open);
+    };
+
+    const filteredAssessments = assessments.filter(assessment => assessment.module_id === module.id);
+    const totalModuleMark = filteredAssessments && filteredAssessments.map(item => item.mark).reduce((acc, current) => acc + current, 0);
+
+    const filteredStudentMarks = studentMarks.filter(studentMark => studentMark.module_id === module.id);
+    const totalStudentModuleMark = filteredStudentMarks && filteredStudentMarks.map(item => item.mark).reduce((acc, current) => acc + current, 0);
+
+    return (
+        <div className='mb-3'>
+            <Button onClick={handleToggle} variant='contained'
+                sx={{
+                    textTransform: 'none',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                    color: 'black',
+                    backgroundColor: 'white',
+                    "&:hover": {
+                        backgroundColor: '#cac1ff'
+                    }
+                }}>
+                <Box>
+                    <Typography variant="h6">{module.name}</Typography>
+                    <Typography variant="body2">{totalStudentModuleMark} / {totalModuleMark}</Typography>
+                </Box>
+                <IconButton>
+                    <RotatingIcon open={open} />
+                </IconButton>
+            </Button>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box className='p-5'>
+                    {filteredAssessments.map((assessment, index) => (
+                        <Grid container key={index} spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                            <Grid item xs={6}>
+                                <Typography variant="body1">{assessment.title}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="body2">
+                                    {(filteredStudentMarks.find(mark => mark.assessment_id === assessment.id) || { mark: 0 }).mark} / {assessment.mark}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    ))}
+                </Box>
+            </Collapse>
+        </div>
+    );
+};
+
+const StudentItem = ({ student, modules, assessments, studentMarks }) => {
+    const [open, setOpen] = useState(false);
+
+    const totalClassMark = assessments && assessments.map(item => item.mark).reduce((acc, current) => acc + current, 0);
+    const totalStudentMark = studentMarks && studentMarks.map(item => item.mark).reduce((acc, current) => acc + current, 0);
+
+    const totalClassEarnedMark = (totalStudentMark / totalClassMark) * 100;
+    const handleToggle = () => {
+        setOpen(!open);
+    };
+
+    return (
+        <Paper elevation={3} sx={{ mb: 2 }}>
+            <Button onClick={handleToggle} variant='contained'
+                sx={{
+                    textTransform: 'none',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                    color: 'black',
+                    backgroundColor: 'white',
+                    px: 2,
+                    py: 1,
+                    "&:hover": {
+                        backgroundColor: '#cac1ff'
+                    }
+                }}>
+                <Box className="text-start">
+                    <Typography variant="h6">{student.firstName} {student.lastName}</Typography>
+                    <Typography variant="body1">{totalClassEarnedMark.toFixed(2)} / 100</Typography>
+                    <Typography variant="body2" style={{color:'#A0A0A0'}}>Auto calculated from {totalStudentMark} / {totalClassMark}</Typography>
+                </Box>
+                <IconButton>
+                    <RotatingIcon open={open} />
+                </IconButton>
+            </Button>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box className='p-5'>
+                    {modules.map(module => (
+                        <ModuleItem
+                            key={module.id}
+                            module={module}
+                            assessments={assessments}
+                            studentMarks={studentMarks}
+                        />
+                    ))}
+                </Box>
+            </Collapse>
+        </Paper>
+    );
+};
 
 const MarkPage = ({ userId, classId }) => {
     const [students, setStudents] = useState([]);
     const [modules, setModules] = useState([]);
     const [assessments, setAssessments] = useState([]);
     const [studentMarks, setStudentMarks] = useState([]);
-    const [openStudentToggles, setOpenStudentToggles] = useState({});
-    const [openModuleToggles, setOpenModuleToggles] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [studentData, moduleData, assessmentData, studentMarksData] = await Promise.all([
-                    getStudents(classId),
-                    getModules(classId),
-                    getAssessmentsByClassId(classId),
-                    getStudentMarks(classId)
-                ]);
+                const studentData = await getStudents(classId);
                 setStudents(studentData);
+                const moduleData = await getModules(classId);
                 setModules(moduleData);
-                setAssessments(assessmentData);
-                setStudentMarks(studentMarksData);
+                const assessmentData = await getAssessmentsByClassId(classId)
+                setAssessments(assessmentData)
+                const studentMarksData = await getStudentMarks(classId)
+                setStudentMarks(studentMarksData)
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching Students and Modules:', error);
             }
         };
         fetchData();
     }, [classId, userId]);
 
-    const toggleStudentOpen = (studentId) => {
-        setOpenStudentToggles(prev => ({
-            ...prev,
-            [studentId]: !prev[studentId]
-        }));
-    };
-
-    const toggleModuleOpen = (studentId, moduleId) => {
-        setOpenModuleToggles(prev => ({
-            ...prev,
-            [studentId]: {
-                ...prev[studentId],
-                [moduleId]: {
-                    ...prev[studentId]?.[moduleId],
-                    isOpen: !prev[studentId]?.[moduleId]?.isOpen
-                }
-            }
-        }));
-    };
-
-    const toggleAssessments = (studentId, moduleId) => {
-        setOpenModuleToggles(prev => ({
-            ...prev,
-            [studentId]: {
-                ...prev[studentId],
-                [moduleId]: {
-                    ...prev[studentId]?.[moduleId],
-                    openAssessments: !prev[studentId]?.[moduleId]?.openAssessments
-                }
-            }
-        }));
-    };
-
-    const closeAllToggles = () => {
-        setOpenStudentToggles({});
-        setOpenModuleToggles({});
-    };
-
-    const classTotalMark = assessments.reduce((acc, assessment) => acc + assessment.mark, 0);
-
     return (
-        <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', m: 2 }}>
-                <Button variant='contained' color='secondary' onClick={closeAllToggles}>
-                    Close All
-                </Button>
-            </Box>
+        <Box sx={{ p: 2 }}>
             {students.map(student => (
-                <Box key={student.id}>
-                    <Button onClick={() => toggleStudentOpen(student.id)} variant='contained' sx={{ textTransform: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '80vw', color: 'black', backgroundColor: 'white', my: 1 }}>
-                        <Box className="text-start">
-                            <Typography variant="h6">{student.firstName} {student.lastName}</Typography>
-                            <Typography variant="body">
-                                <span>{((studentMarks.filter(mark => mark.student_id === student.id).reduce((acc, mark) => acc + mark.mark, 0)) / classTotalMark * 100).toFixed(2)} / 100</span>
-                                <span className='ms-5' style={{ color: 'GrayText' }}>Auto calculated from {studentMarks.filter(mark => mark.student_id === student.id).reduce((acc, mark) => acc + mark.mark, 0)} / {classTotalMark}</span>
-                            </Typography>
-                        </Box>
-                        <IconButton>
-                            <RotatingIcon open={openStudentToggles[student.id] || false} />
-                        </IconButton>
-                    </Button>
-                    <Collapse in={openStudentToggles[student.id] || false} timeout="auto" unmountOnExit>
-                        <Box sx={{ pl: 2, pr: 2, pb: 2 }}>
-                            {modules.map(module => (
-                                <Box key={module.id}>
-                                    <Button onClick={() => toggleModuleOpen(student.id, module.id)} variant='contained' sx={{ textTransform: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '75vw', color: 'black', backgroundColor: 'white', ml: 4, my: 1 }}>
-                                        <Box className="text-start">
-                                            <Typography variant="h6">{module.name}</Typography>
-                                            <Typography variant="body">
-                                                {((studentMarks.filter(mark => mark.module_id === module.id).reduce((acc, mark) => acc + mark.mark, 0)) / assessments.filter(assessment => assessment.module_id === module.id).reduce((acc, assessment) => acc + assessment.mark, 0)).toFixed(2)} / 100
-                                            </Typography>
-                                        </Box>
-                                        <IconButton>
-                                            <RotatingIcon open={openModuleToggles[student.id]?.[module.id]?.isOpen || false} />
-                                        </IconButton>
-                                    </Button>
-                                    <Collapse in={openModuleToggles[student.id]?.[module.id]?.isOpen || false} timeout="auto" unmountOnExit>
-                                        <Box sx={{ pl: 6, pr: 2, py: 1, width: '75vw' }} className="text-start">
-                                            {assessments.filter(assessment => assessment.module_id === module.id).map((assessment, index) => {
-                                                const earnedMark = (studentMarks.find(mark => mark.assessment_id === assessment.id) || { mark: 0 }).mark;
-                                                return (
-                                                    <Box key={index} className='flex m-3 p-3 rounded' style={{ backgroundColor: '#cac1ff' }}>
-                                                        <Typography variant="body" style={{ fontWeight: 'bold' }}>{assessment.title}</Typography>
-                                                        <Typography variant="body" className='pl-5 ml-5'>{earnedMark} / {assessment.mark}</Typography>
-                                                    </Box>
-                                                );
-                                            })}
-                                        </Box>
-                                    </Collapse>
-                                </Box>
-                            ))}
-                        </Box>
-                    </Collapse>
-                </Box>
+                <StudentItem
+                    key={student.id}
+                    student={student}
+                    modules={modules}
+                    assessments={assessments}
+                    studentMarks={studentMarks.filter(mark => mark.student_id === student.id)}
+                />
             ))}
         </Box>
     );
