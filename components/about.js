@@ -1,76 +1,81 @@
 "use client"
 import React from 'react';
 import Image from 'next/image';
-
-const styles = {
-  virtualClassroom: {
-    maxWidth: '1024px',
-    margin: '0 auto',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '2rem', // Spacing between sections
-  },
-  description: {
-    flex: 1, // Take up available space
-  },
-  features: {
-    display: 'flex',
-    flexWrap: 'wrap', // Allow features to wrap on smaller screens
-    justifyContent: 'space-evenly', // Distribute features evenly
-  },
-  feature: {
-    width: 'calc(33% - 2rem)', // Adjust width for desired layout
-    padding: '1rem',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    textAlign: 'center',
-    backgroundColor: '#98fb98'
-  },
-  featureIcon: {
-    fontSize: '2rem',
-    marginBottom: '0.5rem',
-  },
-  cta: {
-    marginTop: '2rem',
-    textAlign: 'center',
-  },
-};
+import { useRouter } from 'next/navigation';
+import { Box, Typography, Button, Grid, Paper } from '@mui/material';
 
 const About = () => {
+  const router = useRouter();
+
   return (
     <>
-      <div style={{ height: '400px', position: 'relative' }}>
-        <Image
-          src="/assets/images/welcome_bg.jpg"
-          alt="My Logo"
-          fill
-          sizes='100vw'
-          style={{ objectFit: 'cover', padding: '50px' }}
-        />
-      </div>
-      <section style={styles.virtualClassroom}>
-        <h1>P F O R T E `</h1>
-        <div style={styles.description}>
-          <p>
-            Experience a seamless learning environment from the comfort of your home. Our virtual classroom provides a dynamic and interactive platform for you to connect with instructors and classmates.
-          </p>
-        </div>
-        <div style={styles.features}>
-          <div style={styles.feature}>
-            <i className="fas fa-comments" style={styles.featureIcon}></i>
-            <h4>Live Chat and Q&A</h4>
-            <p>Ask questions, participate in discussions, and receive instant feedback.</p>
-          </div>
-          <div style={styles.feature}>
-            <i className="fas fa-file-alt" style={styles.featureIcon}></i>
-            <h4>Shared Resources</h4>
-            <p>Access course materials, recordings, and assignments anytime, anywhere.</p>
-          </div>
-        </div>
-        <div style={styles.cta}>
-          <button>Get Started</button>
-        </div>
-      </section>
+      <Box sx={{ maxWidth: '1024px', margin: '0 auto', padding: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+          <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold', color: '#6a5bcd' }}>
+            P F O R T E `
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ backgroundColor: '#6a5bcd', borderRadius: '20px', padding: '10px 20px' }}
+            onClick={() => router.push("/")}
+          >
+            Get Started
+          </Button>
+        </Box>
+        <Grid container spacing={4} sx={{ marginTop: 4 }}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="body1" paragraph sx={{ color: '#555', lineHeight: 1.6 }}>
+              Welcome to PForte, your comprehensive platform for education management. Our platform offers dedicated views for Admins, Students, and Teachers, providing tailored experiences for each role.
+            </Typography>
+            <Grid container spacing={4}>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 3, textAlign: 'center', backgroundColor: '#98fb98', borderRadius: '10px', boxShadow: 3 }} elevation={3}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Classroom Management</Typography>
+                  <Typography sx={{ color: '#777' }}>
+                    Create and manage classrooms with structured modules and assessments to enhance learning.
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 3, textAlign: 'center', backgroundColor: '#98fb98', borderRadius: '10px', boxShadow: 3 }} elevation={3}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Modules and Assessments</Typography>
+                  <Typography sx={{ color: '#777' }}>
+                    Organize your course content into modules, each containing assessments to track progress.
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 3, textAlign: 'center', backgroundColor: '#98fb98', borderRadius: '10px', boxShadow: 3 }} elevation={3}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Mark Dashboard</Typography>
+                  <Typography sx={{ color: '#777' }}>
+                    View comprehensive mark dashboards displaying total marks for classes, modules, and individual assessments.
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper sx={{ padding: 3, textAlign: 'center', backgroundColor: '#98fb98', borderRadius: '10px', boxShadow: 3 }} elevation={3}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Admin Account Management</Typography>
+                  <Typography sx={{ color: '#777' }}>
+                    As an admin, you have full control over operations for user accounts.
+                  </Typography>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ height: '400px', position: 'relative', borderRadius: '10px', overflow: 'hidden', boxShadow: 3 }}>
+              <Image
+                src="/assets/images/welcome_bg.jpg"
+                alt="Welcome Background"
+                fill
+                sizes="100vw"
+                style={{ objectFit: 'cover' }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
     </>
   );
 };

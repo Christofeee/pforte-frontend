@@ -489,7 +489,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                     {!isSubmissionPage && (
                         <DialogContent>
                             {submissions.length === 0 ? (
-                                <Typography variant="body1">There are no marks availabe yet.</Typography>
+                                <Typography variant="body1">There are no marks available yet.</Typography>
                             ) : (
                                 <form
                                     className=""

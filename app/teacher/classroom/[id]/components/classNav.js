@@ -130,7 +130,7 @@ function ClassNav({ classId }) {
                         }}
                         disabled
                     >
-                        Assessment Dashboard (Comming Soon)
+                        Assessment Dashboard (Coming Soon)
                     </Button>
                     <Button
                         sx={{
@@ -147,7 +147,7 @@ function ClassNav({ classId }) {
                         }}
                         disabled
                     >
-                        Announcements (Comming Soon)
+                        Announcements (Coming Soon)
                     </Button>
                 </Box>
             </Toolbar>

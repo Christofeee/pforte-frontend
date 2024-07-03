@@ -133,7 +133,7 @@ export default function ModuleList({ classId }) {
                                     {module.name}
                                 </Typography>
                                 <Typography variant='body2' color='textSecondary' noWrap className='p-2'>
-                                    {module.description} description that can be long and should stay in a single line and truncate if too lengthy. Phasellus sed sapien maximus, vestibulum urna ultricies, mattis metus. Etiam pretium cursus quam sit amet hendrerit. Morbi urna enim, fermentum ut vestibulum eget, ultricies ac eros. Sed suscipit porta massa, feugiat feugiat sem feugiat eu. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed ex ex, eleifend
+                                    {module.description}
                                 </Typography>
                             </Box>
                             <Button
@@ -159,7 +159,7 @@ export default function ModuleList({ classId }) {
                             <Typography variant='body2' style={{ color: '#cac1ff' }} className='flex'>
                                 {/* <Checkbox isChecked={module.isComplete} handleChange={handleCheckboxChange} disabled={true} /> */}
                                 <span className='px-5'>
-                                    Teacher's Instruction Completed Or Not Feature Is <span style={{ color: '#6a5bcd' }}>Comming Soon</span>
+                                    Teacher's Instruction Completed Or Not Feature Is <span style={{ color: '#6a5bcd' }}>Coming Soon</span>
                                 </span>
                             </Typography>
                         </div>

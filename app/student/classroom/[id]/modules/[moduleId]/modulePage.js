@@ -238,7 +238,6 @@ export default function ModulePage({ classId, moduleId, userId }) {
             </div >
             <Typography variant="body2" color="textSecondary" style={descriptionStyle}>
                 {loading ? "Loading..." : moduleData?.description}
-                Description that can be long and should stay in a single line and truncate if too lengthy. Phasellus sed sapien maximus, vestibulum urna ultricies, mattis metus. Etiam pretium cursus quam sit amet hendrerit. Morbi urna enim, fermentum ut vestibulum eget, ultricies ac eros. Sed suscipit porta massa, feugiat feugiat sem feugiat eu. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed ex ex, eleifend
             </Typography>
             <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: '0px 2px 2px -2px gray' }}>
                 <Toolbar disableGutters>

@@ -28,7 +28,7 @@ export default function Dashboard({ userID }) {
                 height: '100%',
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
               }}
-            >Comming Soon</Button>
+            >Coming Soon</Button>
           </div>
         </Grid>
       </Grid>
