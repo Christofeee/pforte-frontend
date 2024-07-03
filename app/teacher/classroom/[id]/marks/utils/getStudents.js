@@ -137,12 +137,15 @@ export default async function getStudents(classId) {
                 }
             }
         }
-        const filteredClassUsers = classUsers.filter(classUser =>
-            students.some(student => student.id === classUser.user_id)
+
+        console.log("classUsers:", classUsers)
+        const filteredStudents = students.filter(student =>
+            classUsers.some(classUser => classUser.user_id === student.id)
         );
 
-        console.log("filteredClassUsers", filteredClassUsers)
-        return students
+
+        // console.log("filteredClassUsers", filteredClassUsers)
+        return filteredStudents
     } catch (error) {
         console.error('Error fetching users:', error);
     }
