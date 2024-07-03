@@ -6,6 +6,7 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import TextField from '@mui/material/TextField';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import LinkIcon from '@mui/icons-material/Link';
 import { Box, ButtonBase, Tooltip } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
@@ -24,6 +25,9 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import getSubmissions from "../utils/getSubmissions";
 import CreateAssessmentDialog from "./createAssignmentDialog";
 import getMarksByAssessmentAndStudentIds from "../utils/getMarksByAssessmentAndStudentIds";
+import getStudentName from "../utils/getStudentName";
+import FileDropzone from "./fileDropZone";
+import uploadSubmissionFile from "../utils/uploadSubmissionFile";
 
 export default function Assessments({ moduleId, classId, isStudent, userId }) {
     console.log("User Id in module assessment:", userId)
@@ -41,6 +45,10 @@ export default function Assessments({ moduleId, classId, isStudent, userId }) {
     const [showDeleteAssessmentModal, setShowDeleteAssessmentModal] = useState(false)
     const [deleteModalForAssessment, setDeleteModalForAssessment] = useState(null);
     const [isSubmissionPage, setIsSubmissionPage] = useState(true)
+    const [selectedAssessmentId, setSelectedAssessmentId] = useState(null)
+
+    const [fileSelected, setFileSelected] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     useEffect(() => {
         console.log("fetching assessments")
@@ -94,6 +102,7 @@ export default function Assessments({ moduleId, classId, isStudent, userId }) {
 
     const handleSubmissionsClick = async (assessment_id) => {
         console.log(assessment_id)
+        setSelectedAssessmentId(assessment_id)
         setIsSubmissionFetching(true)
         try {
             const data = await getSubmissions(assessment_id);
@@ -204,6 +213,43 @@ export default function Assessments({ moduleId, classId, isStudent, userId }) {
             console.error("Error submitting marks:", error);
         }
     };
+
+    const handleFileDrop = (file) => {
+        setSelectedFile(file);
+        setFileSelected(true);
+    };
+
+    const handleSubmitSubmission = async () => {
+        try {
+            console.log("SELECTED ASSESSMENT ID :", selectedAssessmentId)
+            const studentName = await getStudentName(userId)
+            console.log("Student name: ", studentName)
+            const submissionData = {
+                student_id: userId,
+                student_name: studentName,
+                assessment_id: selectedAssessmentId,
+                isSubmitted: true
+            }
+            console.log("SUBMISSION DATA HERE:", submissionData)
+
+
+            await axios.post('http://localhost:8000/api/submission', submissionData);
+            await handleSubmitFiles()
+            setSubmissionModal(false);
+        } catch (error) {
+            console.error("Error submitting student work:", error);
+        }
+    }
+
+    const handleSubmitFiles = async () => {
+        try {
+            console.log('Confirming upload...');
+            console.log("selectedFile: ", selectedFile)
+            await uploadSubmissionFile(selectedFile, userId, selectedAssessmentId)
+        } catch (error) {
+            console.error('Error uploading pdf:', error);
+        }
+    }
 
     return (
         <>
@@ -399,7 +445,28 @@ export default function Assessments({ moduleId, classId, isStudent, userId }) {
                     </div>
                     <DialogContent>
                         {submissions.length === 0 ? (
-                            <Typography variant="body1">There are no submissions yet.</Typography>
+                            <>
+                                <Typography variant="body1">There are no submissions yet.</Typography>
+                                <FileDropzone onFileDrop={handleFileDrop} setFileSelected={setFileSelected} />
+                                <Button
+                                    onClick={handleSubmitSubmission}
+                                    disabled={!fileSelected}
+                                    type="submit"
+                                    variant="contained"
+                                    className="px-5"
+                                    sx={{
+                                        textTransform: 'none',
+                                        padding: '.4rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: '#6a5bcd', // White text color
+                                        '&:hover': {
+                                            backgroundColor: '#98fb98', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
+                                    }}>Submit <FileUploadOutlinedIcon className='ml-2' /></Button>
+                            </>
+
                         ) : (
                             <>
                                 {submissions.map((submission, index) => {
@@ -441,7 +508,7 @@ export default function Assessments({ moduleId, classId, isStudent, userId }) {
                                 }
                                 )
                                 }
-                                <Typography fontWeight="md" variant="body2" sx={{ color: '#cac1ff'}}>
+                                <Typography fontWeight="md" variant="body2" sx={{ color: '#cac1ff' }}>
                                     We're working hard to give you "Update Submission Feature"
                                 </Typography>
                             </>
