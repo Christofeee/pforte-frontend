@@ -395,136 +395,79 @@ export default function Assessments({ moduleId, classId, isStudent, userId }) {
                     className="p-5"
                     style={{ width: "40vw" }}>
                     <div className="flex">
-                        <Button
-                            onClick={() => setIsSubmissionPage(true)}
-                            className="mr-3"
-                            sx={{
-                                textTransform: 'none',
-                                color: isSubmissionPage === true ? '#6a5bcd' : 'black',
-                                boxShadow: isSubmissionPage === true ? '3' : '1',
-                                '&:hover': {
-                                    bgcolor: '#6a5bcd',
-                                    color: 'white'
-                                }
-                            }}
-                        >Submission</Button>
-                        <Button
-                            onClick={() => setIsSubmissionPage(false)}
-                            className="mr-3"
-                            sx={{
-                                textTransform: 'none',
-                                color: isSubmissionPage === false ? '#6a5bcd' : 'black',
-                                boxShadow: isSubmissionPage === false ? '3' : '1',
-                                '&:hover': {
-                                    bgcolor: '#6a5bcd',
-                                    color: 'white'
-                                }
-                            }}
-                        >Mark</Button>
+                        <Typography variant="h6">Submission and Mark</Typography>
                     </div>
-                    {isSubmissionPage && (
-                        <DialogContent>
-                            {submissions.length === 0 ? (
-                                <Typography variant="body1">There are no submissions yet.</Typography>
-                            ) : (submissions.map((submission, index) => (
-                                <Card key={index} className="my-5" orientation="horizontal" variant="outlined" style={{ width: "100%" }}>
-                                    <FolderSharedIcon sx={{ color: '#6a5bcd' }} />
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                        <CardContent style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                            <Tooltip title={`By ${submission.student_name}`}>
-                                                <Typography fontWeight="md" textColor="success.plainColor">
-                                                    Submitted
-                                                </Typography>
-                                            </Tooltip>
-                                        </CardContent>
-                                        <div style={{ marginLeft: 'auto', cursor: 'pointer' }} onClick={() => handleSubmissionsClick(submission.assessment_id)}>
-                                            <DownloadIcon
-                                                sx={{ color: "#6a5bcd" }}
-                                                onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)}
-                                            />
-                                        </div>
-                                    </div>
-                                </Card>
-                            )))}
-                            <DialogActions>
-                                <div className='pt-5'>
-                                    <Button
-                                        onClick={() => setSubmissionModal(false)}
-                                        type="submit"
-                                        variant="contained"
-                                        className="px-5"
-                                        sx={{
-                                            textTransform: 'none',
-                                            padding: '.4rem', // Adjust padding for a larger button
-                                            borderRadius: '8px', // Rounded corners
-                                            backgroundColor: 'transparent', // Transparent background
-                                            color: '#6a5bcd', // White text color
-                                            '&:hover': {
-                                                backgroundColor: '#98fb98', // White background on hover
-                                                color: 'black', // Blue text color on hover
-                                            },
-                                        }}>back</Button>
-                                </div>
-                            </DialogActions>
-                        </DialogContent>
-                    )}
-                    {!isSubmissionPage && (
-                        <DialogContent>
-                            {submissions.length === 0 ? (
-                                <>
-                                    <Typography variant="body1">Please submit your work in submission first, so that teacher can give you mark for this assignment.</Typography>
-                                    <DialogActions>
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => setSubmissionModal(false)}
-                                            sx={{
-                                                textTransform: 'none',
-                                                padding: '.4rem', // Adjust padding for a larger button
-                                                borderRadius: '8px', // Rounded corners
-                                                backgroundColor: 'transparent', // Transparent background
-                                                color: '#6a5bcd', // White text color
-                                                '&:hover': {
-                                                    backgroundColor: '#98fb98', // White background on hover
-                                                    color: 'black', // Blue text color on hover
-                                                },
-                                            }}>back</Button>
-                                    </DialogActions>
-                                </>
-                            ) : (
-                                <form
-                                    className=""
-                                    onSubmit={handleMarksSubmit}
-                                >
-                                    {submissions.map((submission, index) => {
-                                        const mark = marks.find(mark => mark.student_id === submission.student_id);
-                                        return (
+                    <DialogContent>
+                        {submissions.length === 0 ? (
+                            <Typography variant="body1">There are no submissions yet.</Typography>
+                        ) : (
+                            <>
+                                {submissions.map((submission, index) => {
+                                    const mark = marks.find(mark => mark.student_id === submission.student_id);
+                                    return (
+                                        <>
+                                            <Card key={index} className="my-5" orientation="horizontal" variant="outlined" style={{ width: "100%" }}>
+                                                <FolderSharedIcon sx={{ color: '#6a5bcd' }} />
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                                    <CardContent style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        <Tooltip title={`By ${submission.student_name}`}>
+                                                            <Typography fontWeight="md" textColor="success.plainColor">
+                                                                Submitted
+                                                            </Typography>
+                                                        </Tooltip>
+                                                    </CardContent>
+                                                    <div style={{ marginLeft: 'auto', cursor: 'pointer' }} onClick={() => handleSubmissionsClick(submission.assessment_id)}>
+                                                        <DownloadIcon
+                                                            sx={{ color: "#6a5bcd" }}
+                                                            onClick={() => handleFileDownload(submission.student_id, submission.assessment_id)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Card>
                                             <Box
                                                 className="block my-5"
                                             >
-                                                {mark ? mark.mark : 'Wait for the teacher to give you mark.'}
+                                                {mark ?
+                                                    <div className="flex">
+                                                        <Typography sx={{ color: '#6a5bcd' }}>
+                                                            {mark.mark}
+                                                        </Typography>
+                                                        <div className="ml-2">marks</div>
+                                                    </div>
+                                                    : 'Wait for the teacher to give you mark.'}
                                             </Box>
-                                        )
-                                    })}
-                                    <DialogActions>
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => setSubmissionModal(false)}
-                                            sx={{
-                                                textTransform: 'none',
-                                                padding: '.4rem', // Adjust padding for a larger button
-                                                borderRadius: '8px', // Rounded corners
-                                                backgroundColor: 'transparent', // Transparent background
-                                                color: '#6a5bcd', // White text color
-                                                '&:hover': {
-                                                    backgroundColor: '#98fb98', // White background on hover
-                                                    color: 'black', // Blue text color on hover
-                                                },
-                                            }}>back</Button>
-                                    </DialogActions>
-                                </form>
-                            )}
-                        </DialogContent>
-                    )}
+                                        </>
+                                    )
+                                }
+                                )
+                                }
+                                <Typography fontWeight="md" variant="body2" sx={{ color: '#cac1ff'}}>
+                                    We're working hard to give you "Update Submission Feature"
+                                </Typography>
+                            </>
+                        )
+                        }
+                        <DialogActions>
+                            <div className='pt-5'>
+                                <Button
+                                    onClick={() => setSubmissionModal(false)}
+                                    type="submit"
+                                    variant="contained"
+                                    className="px-5"
+                                    sx={{
+                                        textTransform: 'none',
+                                        padding: '.4rem', // Adjust padding for a larger button
+                                        borderRadius: '8px', // Rounded corners
+                                        backgroundColor: 'transparent', // Transparent background
+                                        color: '#6a5bcd', // White text color
+                                        '&:hover': {
+                                            backgroundColor: '#98fb98', // White background on hover
+                                            color: 'black', // Blue text color on hover
+                                        },
+                                    }}>back</Button>
+                            </div>
+                        </DialogActions>
+                    </DialogContent>
                 </div>
             </Dialog>
             <Dialog
