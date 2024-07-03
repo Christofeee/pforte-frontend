@@ -32,7 +32,7 @@ import { Modal, Backdrop, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import ComingSoon from '@/components/ComingSoon';
 
-export default function ModulePage({ classId, moduleId }) {
+export default function ModulePage({ classId, moduleId, userId }) {
     console.log(classId)
     const router = useRouter();
 
@@ -182,7 +182,7 @@ export default function ModulePage({ classId, moduleId }) {
             case 'Videos':
                 return <ComingSoon />
             case 'Assessments':
-                return <ModuleAssessments moduleId={moduleId} classId={classId} isStudent={switchChecked} />
+                return <ModuleAssessments moduleId={moduleId} classId={classId} isStudent={switchChecked} userId={userId} />
             default:
                 return null;
         }

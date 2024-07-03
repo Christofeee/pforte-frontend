@@ -7,6 +7,7 @@ import ClassName from "../../components/className";
 import ClassNav from "../../components/classNav";
 import ModulePage from "./modulePage";
 import AdminHomeButton from "@/app/admin/components/AdminHomeButton";
+import { User } from "lucide-react";
 
 export default async function Module({ params }) {
     const session = await getServerSession(authOptions);
@@ -15,12 +16,13 @@ export default async function Module({ params }) {
     let userID
     try {
         userID = ParseJwt(access_token).sub
+        
 
     } catch (error) {
         console.error('Not signed In', error);
     }
 
-
+    console.log("USERID HERE", userID)
 
     return (
         <AuthCheck session={session} roleToCheck="student">
@@ -29,7 +31,7 @@ export default async function Module({ params }) {
                 <ClassName classId={params.id} />
                 <ClassNav classId={params.id} />
                 <div className="p-5">
-                    <ModulePage classId={params.id} moduleId={params.moduleId} />
+                    <ModulePage classId={params.id} moduleId={params.moduleId} userId={userID} />
                 </div>
             </main>
         </AuthCheck>

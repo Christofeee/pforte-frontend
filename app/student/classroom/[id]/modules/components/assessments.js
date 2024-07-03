@@ -7,7 +7,6 @@ import CardContent from '@mui/joy/CardContent';
 import TextField from '@mui/material/TextField';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import LinkIcon from '@mui/icons-material/Link';
-import Switch from '@mui/material/Switch';
 import { Box, ButtonBase, Tooltip } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -26,8 +25,8 @@ import getSubmissions from "../utils/getSubmissions";
 import CreateAssessmentDialog from "./createAssignmentDialog";
 import getMarksByAssessmentAndStudentIds from "../utils/getMarksByAssessmentAndStudentIds";
 
-export default function Assessments({ moduleId, classId, isStudent }) {
-
+export default function Assessments({ moduleId, classId, isStudent, userId }) {
+    console.log("User Id in module assessment:", userId)
     const [loadingAssessments, setLoadingAssessments] = useState(false);
     const [assessments, setAssessments] = useState([])
     const [marks, setMarks] = useState([]);
@@ -99,11 +98,14 @@ export default function Assessments({ moduleId, classId, isStudent }) {
         try {
             const data = await getSubmissions(assessment_id);
             console.log("Submissions:", data);
-            setSubmissions(data)
-            const studentIds = data.map(submission => submission.student_id);
-            setStudentIds(studentIds)
+            // const studentIds = data.map(submission => submission.student_id);
+            // setStudentIds(studentIds)
+            const filteredData = data.filter(record => record.student_id === userId);
+            console.log("filtered submission", filteredData)
+            setSubmissions(filteredData)
 
-            const markData = await getMarksByAssessmentAndStudentIds(assessment_id, studentIds)
+
+            const markData = await getMarksByAssessmentAndStudentIds(assessment_id, [userId])
 
             console.log("MARK DATA:", markData)
 
@@ -244,27 +246,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                 <Typography variant="body2" color="" style={descriptionStyle}>
                                     {assessment.mark} marks
                                 </Typography>
-                                {/* <Button
-                                    variant="contained"
-                                    style={editStyle}
-                                    onClick={() => handleDeleteAssessment(assessment.id)}
-                                    className='py-1 rounded'
-                                    sx={{
-                                        textTransform: 'none',
-                                        padding: '.4rem', // Adjust padding for a larger button
-                                        borderRadius: '8px', // Rounded corners
-                                        backgroundColor: 'transparent', // Transparent background
-                                        color: 'red', // White text color
-                                        '&:hover': {
-                                            backgroundColor: '#ffcccc', // White background on hover
-                                            color: 'black', // Blue text color on hover
-                                        },
-                                    }}>
-                                    <DeleteOutlineIcon />
-                                </Button> */}
                                 <Dialog
-                                    // open={showDeleteAssessmentModal}
-                                    // onClose={() => setShowDeleteAssessmentModal(false)}
                                     open={deleteModalForAssessment === assessment.id} // Check if this assessment's modal should be open
                                     onClose={() => setDeleteModalForAssessment(null)}
                                 >
@@ -425,7 +407,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                     color: 'white'
                                 }
                             }}
-                        >Submissions</Button>
+                        >Submission</Button>
                         <Button
                             onClick={() => setIsSubmissionPage(false)}
                             className="mr-3"
@@ -438,7 +420,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                     color: 'white'
                                 }
                             }}
-                        >Marks</Button>
+                        >Mark</Button>
                     </div>
                     {isSubmissionPage && (
                         <DialogContent>
@@ -451,7 +433,7 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                         <CardContent style={{ flex: '1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             <Tooltip title={`By ${submission.student_name}`}>
                                                 <Typography fontWeight="md" textColor="success.plainColor">
-                                                    By {submission.student_name}
+                                                    Submitted
                                                 </Typography>
                                             </Tooltip>
                                         </CardContent>
@@ -489,7 +471,25 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                     {!isSubmissionPage && (
                         <DialogContent>
                             {submissions.length === 0 ? (
-                                <Typography variant="body1">There are no marks availabe yet.</Typography>
+                                <>
+                                    <Typography variant="body1">Please submit your work in submission first, so that teacher can give you mark for this assignment.</Typography>
+                                    <DialogActions>
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => setSubmissionModal(false)}
+                                            sx={{
+                                                textTransform: 'none',
+                                                padding: '.4rem', // Adjust padding for a larger button
+                                                borderRadius: '8px', // Rounded corners
+                                                backgroundColor: 'transparent', // Transparent background
+                                                color: '#6a5bcd', // White text color
+                                                '&:hover': {
+                                                    backgroundColor: '#98fb98', // White background on hover
+                                                    color: 'black', // Blue text color on hover
+                                                },
+                                            }}>back</Button>
+                                    </DialogActions>
+                                </>
                             ) : (
                                 <form
                                     className=""
@@ -498,21 +498,11 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                     {submissions.map((submission, index) => {
                                         const mark = marks.find(mark => mark.student_id === submission.student_id);
                                         return (
-                                            <TextField
+                                            <Box
                                                 className="block my-5"
-                                                key={index}
-                                                label={`Mark for ${submission.student_name}`}
-                                                value={formMarks[submission.student_id] ?? (mark ? mark.mark : '')}
-                                                type="number"
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setFormMarks({
-                                                        ...formMarks,
-                                                        [submission.student_id]: value === '' ? '' : Number(value)
-                                                    });
-                                                }}
-                                                required
-                                            />
+                                            >
+                                                {mark ? mark.mark : 'Wait for the teacher to give you mark.'}
+                                            </Box>
                                         )
                                     })}
                                     <DialogActions>
@@ -530,22 +520,6 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                                     color: 'black', // Blue text color on hover
                                                 },
                                             }}>back</Button>
-                                        <Button
-                                            variant="contained"
-                                            type="submit"
-                                            sx={{
-                                                textTransform: 'none',
-                                                padding: '.4rem', // Adjust padding for a larger button
-                                                borderRadius: '8px', // Rounded corners
-                                                backgroundColor: 'transparent', // Transparent background
-                                                color: '#6a5bcd', // White text color
-                                                '&:hover': {
-                                                    backgroundColor: '#98fb98', // White background on hover
-                                                    color: 'black', // Blue text color on hover
-                                                },
-                                            }}>
-                                            Save <SaveAltIcon />
-                                        </Button>
                                     </DialogActions>
                                 </form>
                             )}
