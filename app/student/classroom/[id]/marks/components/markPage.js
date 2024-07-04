@@ -44,10 +44,10 @@ const ModuleItem = ({ module, assessments, studentMarks }) => {
                 }}>
                 <Box>
                     <Typography variant="h6">{module.name}</Typography>
-                    <Typography variant="body2" style={{ color: '#6a5bcd'}}>{totalStudentModuleMark} / {totalModuleMark}</Typography>
+                    <Typography variant="body2" style={{ color: '#6a5bcd' }}>{totalStudentModuleMark} / {totalModuleMark}</Typography>
                 </Box>
                 <IconButton>
-                    <RotatingIcon open={open} style={{ color: '#6a5bcd'}}/>
+                    <RotatingIcon open={open} style={{ color: '#6a5bcd' }} />
                 </IconButton>
             </Button>
             <Collapse in={open} timeout="auto" unmountOnExit>
@@ -58,7 +58,7 @@ const ModuleItem = ({ module, assessments, studentMarks }) => {
                                 <Typography variant="body1">{assessment.title}</Typography>
                             </Grid>
                             <Grid item xs={6}>
-                                <Typography variant="body2" style={{ color: '#6a5bcd'}}>
+                                <Typography variant="body2" style={{ color: '#6a5bcd' }}>
                                     {(filteredStudentMarks.find(mark => mark.assessment_id === assessment.id) || { mark: 0 }).mark} / {assessment.mark}
                                 </Typography>
                             </Grid>
@@ -99,12 +99,15 @@ const StudentItem = ({ student, modules, assessments, studentMarks }) => {
                     }
                 }}>
                 <Box className="text-start">
-                    <Typography variant="h6">{student.firstName} {student.lastName}</Typography>
-                    <Typography variant="body1" sx={{ color: '#6a5bcd'}}>{totalClassEarnedMark.toFixed(2)} / 100</Typography>
-                    <Typography variant="body2" style={{color:'#A0A0A0'}}>Auto calculated from {totalStudentMark} / {totalClassMark}</Typography>
+                    <Box className="flex" sx={{ alignItems: 'center'}}>
+                        <Typography variant="h6">Total Mark </Typography>
+                        <Typography variant="body2"style={{ color: '#A0A0A0' }} className='ml-5'>Expand to see module and assessment marks</Typography>
+                    </Box>
+                    <Typography variant="body1" sx={{ color: '#6a5bcd' }}>{totalClassEarnedMark.toFixed(2)} / 100</Typography>
+                    <Typography variant="body2" style={{ color: '#A0A0A0' }}>Auto calculated from {totalStudentMark} / {totalClassMark}</Typography>
                 </Box>
                 <IconButton>
-                    <RotatingIcon open={open} style={{ color: '#6a5bcd'}}/>
+                    <RotatingIcon open={open} style={{ color: '#6a5bcd' }} />
                 </IconButton>
             </Button>
             <Collapse in={open} timeout="auto" unmountOnExit>
@@ -123,7 +126,8 @@ const StudentItem = ({ student, modules, assessments, studentMarks }) => {
     );
 };
 
-const MarkPage = ({ userId, classId }) => {
+const MarkPage = ({ userID, classId }) => {
+    console.log("user id", userID)
     const [students, setStudents] = useState([]);
     const [modules, setModules] = useState([]);
     const [assessments, setAssessments] = useState([]);
@@ -133,7 +137,9 @@ const MarkPage = ({ userId, classId }) => {
         const fetchData = async () => {
             try {
                 const studentData = await getStudents(classId);
-                setStudents(studentData);
+                const filteredStudentData = studentData.find(student => userID === student.id)
+                console.log("studentData", filteredStudentData)
+                setStudents([filteredStudentData]);
                 const moduleData = await getModules(classId);
                 setModules(moduleData);
                 const assessmentData = await getAssessmentsByClassId(classId)
@@ -145,7 +151,7 @@ const MarkPage = ({ userId, classId }) => {
             }
         };
         fetchData();
-    }, [classId, userId]);
+    }, [classId, userID]);
 
     return (
         <Box sx={{ p: 2 }}>

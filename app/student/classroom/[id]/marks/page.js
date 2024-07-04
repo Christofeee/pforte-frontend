@@ -19,6 +19,7 @@ export default async function Marks({ params }) {
   } catch (error) {
     console.error('Not signed In', error);
   }
+  console.log("USERID", userID)
 
   return (
     <AuthCheck session={session} roleToCheck="student">

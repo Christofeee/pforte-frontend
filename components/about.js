@@ -14,14 +14,19 @@ const About = () => {
           <Typography variant="h3" component="h1" sx={{ fontWeight: 'bold', color: '#6a5bcd' }}>
             P F O R T E `
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ backgroundColor: '#6a5bcd', borderRadius: '20px', padding: '10px 20px' }}
-            onClick={() => router.push("/")}
-          >
-            Get Started
-          </Button>
+          <Box>
+            <Typography variant="body2" component="h1" sx={{ fontWeight: 'bold', color: '#cac1ff' }} className='mb-5'>
+              If you have not logged in, go log in.<b/>If you have, you can just get started.
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ backgroundColor: '#6a5bcd', borderRadius: '20px', padding: '10px 20px' }}
+              onClick={() => router.push("/")}
+            >
+              Get Started
+            </Button>
+          </Box>
         </Box>
         <Grid container spacing={4} sx={{ marginTop: 4 }}>
           <Grid item xs={12} md={6}>

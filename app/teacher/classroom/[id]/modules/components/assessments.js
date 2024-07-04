@@ -155,6 +155,40 @@ export default function Assessments({ moduleId, classId, isStudent }) {
         }
     };
 
+    const handleAssessmentFileDownload = async (file) => {
+        console.log(file.id);
+        try {
+            const downloadUrl = `http://localhost:8000/api/assessment/file/download/${file.id}`; // Adjust URL as per your API endpoint
+
+            // Make a GET request to download the file
+            const response = await axios.get(downloadUrl, {
+                responseType: 'blob' // important for downloading blobs (files)
+            });
+
+            // Create a temporary URL for the blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            // Create an anchor element
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = file.file_name; // Use the original file name
+
+            // Append the anchor to the body and click it to trigger the download
+            document.body.appendChild(a);
+            a.click();
+
+            // Remove the anchor from the body
+            document.body.removeChild(a);
+
+            // Clean up the temporary URL
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading file:", error);
+            // Handle error as needed
+        }
+    };
+
     const handleDeleteAssessment = (assessmentId) => {
         setDeleteModalForAssessment(assessmentId);
     }
@@ -332,14 +366,19 @@ export default function Assessments({ moduleId, classId, isStudent }) {
                                             variant="outlined"
                                             style={{ width: "100%" }}
                                         >
-                                            <InsertDriveFileIcon sx={{ color: '#6a5bcd' }} />
-                                            <CardContent style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: 'calc(100% - 60px)' }}>
-                                                <Tooltip title={file.file_name}>
-                                                    <Typography fontWeight="md" textColor="success.plainColor">
-                                                        {truncateFilename(file.file_name, 30)}
-                                                    </Typography>
-                                                </Tooltip>
-                                            </CardContent>
+                                            <ButtonBase
+                                                onClick={() => handleAssessmentFileDownload(file)}
+                                                style={{ width: "100%" }}
+                                            >
+                                                <InsertDriveFileIcon sx={{ color: '#6a5bcd' }} />
+                                                <CardContent style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: 'calc(100% - 60px)' }}>
+                                                    <Tooltip title={file.file_name}>
+                                                        <Typography fontWeight="md" textColor="success.plainColor">
+                                                            {truncateFilename(file.file_name, 30)}
+                                                        </Typography>
+                                                    </Tooltip>
+                                                </CardContent>
+                                            </ButtonBase>
                                         </Card>
                                     </Grid>
                                 ))}
